@@ -1,0 +1,86 @@
+﻿@{ 
+    Layout = null;
+}
+<script src="~/lib/jquery/dist/jquery-3.6.1.min.js"></script>
+<link href="~/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+<script src="~/lib/jquery/dist/jquery.dataTables.min.js"></script>
+<script src="~/js/dataTables.bootstrap5.min.js"></script>
+<link href="~/css/jquery.dataTables.min.css" rel="stylesheet" />
+<script src="~/lib/jquery/dist/jquery.dataTables.min.jsdttbl.js"></script>
+
+<div class="container">
+    <div class="table-responsive">
+        <table id="myTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>EmpId</th>
+                    <th>Employee Name</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src="~/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable(
+                {
+                    ajax: {
+                        url: "Employee/DataTable",
+                        type: "POST",
+                        dataType: "Json"
+                    },
+                    processing: true,
+                    serverSide: true,
+                    filter: true,
+                    orderMulti: false,
+                    columnDefs: [{
+                        targets: [0],
+                        visible: false,
+                        searchable: false
+                    }],
+                    columns: [
+                        { data: "empId", name: "EmpId", "autoWidth": true },
+                        { data: "employeeName", name: "EmployeeName", "autoWidth": true },
+                        { data: "department", name: "Department", "autoWidth": true },
+                        { data: "designation", name: "Designation", "autoWidth": true },
+                        {
+                            "render": function (data, type, full, meta) { return '< class="btn btn-info" href="/Employee/Edit/' + full.EmpId + '">Edit</a>'; }
+                        },
+                        {
+                            data: null,
+                            render: function (data, type, row) { return "<a href='#' class='btn btn-danger' onclick=DeleteData ('" + row.EmpId + "'); >Delete</a>"; }
+                        },
+                    ]
+                });
+        });
+
+        function DeleteData(EmpId) {
+            if (confirm("Are you sure you want to delete ...?")) {
+                Delete(EmpId);
+            } else { return false; }
+        }
+
+        function Delete(EmpId) {
+            var url = '@Url.Content("~/")' + "Employee/Delete";
+
+            $.post(url, { ID: EmpId }, function (data) {
+                if (data) {
+                    oTable = $('#myTable').DataTable();
+                    oTable.draw();
+                } else {
+                    alert("Something Went Wrong!");
+                }
+            });
+        }
+
+
+    </script>
+
+}

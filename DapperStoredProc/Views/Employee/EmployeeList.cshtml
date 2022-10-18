@@ -1,0 +1,57 @@
+﻿
+@model IEnumerable<DapperStoredProc.Models.Employee>
+
+@{
+    ViewData["Title"] = "EmployeeList";
+}
+
+<h1>EmployeeList</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                EmpId
+            </th>
+            <th>
+                Employee Name
+            </th>
+            <th>
+                Designation
+            </th>
+            <th>
+                Department
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @item.EmpId)
+            </td>
+            <td>
+                @item.EmployeeName)
+            </td>
+            <td>
+                @item.Designation)
+            </td>
+            <td>
+                @item.Department)
+            </td>
+
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.EmpId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.EmpId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.EmpId">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

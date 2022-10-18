@@ -1,0 +1,348 @@
+﻿@{
+    Layout = null;
+}
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Index</title>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+        <script src="@Url.Content("~/lib/jquery-validation/dist/jquery.validate.js")"></script>
+        <script src="@Url.Content("~/lib/jquery-validation/dist/additional-methods.js")"></script>
+        <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="//cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+        <script src="//cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+
+        <style>
+            span.field-validation-error {
+                color: red;
+            }
+
+            .error {
+                float: left;
+                color: #FF0808 !important;
+            }
+
+
+            .has-error .form-control {
+                border-color: #E91E63;
+                color: #E91E63;
+            }
+
+            .has-error .cke_editor_Description {
+                border-color: #A94442;
+                color: #A94442;
+            }
+
+            .has-error .form-control > .select2.select2-container > .selection > .select2-selection.select2-selection--single {
+                border-color: #A94442;
+                color: #A94442;
+            }
+
+            textarea.error::placeholder, input.error::placeholder {
+                color: #A94442;
+            }
+
+            textarea.error::-webkit-input-placeholder, input.error::-webkit-input-placeholder {
+                color: #A94442;
+            }
+        </style>
+
+    </head>
+<div class="container">
+    <div style="width:90%; margin:0 auto" class="tablecontainer">
+        <a  class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/AddEmployee" data-type='Add' style="margin-top:20px;background-color:darkgreen;"> <i class="fa fa-plus"></i> Add Employee</a><br /><br />
+        <table id="myTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>EmpId</th>
+                    <th>Employee Name</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="empPopup">
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+       
+       
+    $(document).ready(function () {
+        $('#myTable').DataTable(
+            {
+                "Processing": true, // for show progress bar
+                "serverSide": true, // for process server side
+                "filter": true, // this is for disable filter (search box)
+                "orderMulti": true, // for disable multiple column at once
+                "pageLength": 10,
+                "bSortable": true,
+                "ajax": {
+                    "url": "/Employee/DataTable",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columnDefs": [{                    
+                    "order": [[0]],
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false,                    
+                    "language": {
+                        "emptyTable": "No record found. Please click on Add Employee for create new record.",
+                        "Processing": '<i class="fa fa- refresh fa- spin">Laoding...</i>'
+                    },
+                }],
+                columns: [
+                    { data: "empId", "autoWidth": true },
+                    { data: "employeeName", "autoWidth": true },
+                    { data: "designation", "autoWidth": true },
+                    { data: "department", "autoWidth": true },
+                    {
+                        data: "empId",
+                        "render": function (data, type, row) { return '<a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/UpdateEmployee?id=' + data + '" ></i>Edit</button>'; }
+                    },
+                    {
+                        data: "empId",
+                        render: function (data, type, row) {
+                            return "<a href='#' class='btn btn-danger' onclick=DeleteData('" + data + "'); >Delete</a>";
+                        }
+                    },
+                ],
+                "dom": "Bfrtip",
+                    "buttons": [
+                        {
+                            extend: 'copy',
+                            className: 'copy Button',
+                            text: '<style="background-color:lightgreen" ><i class="fa fa-clone"></i> Copy'
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="fa fa-file-excel-o"></i> Excel'
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<i class="fa fa-file-pdf-o"></i> Pdf'
+                        },
+                        {
+                            extend: 'csv',
+                            text: '<i class="fa fa-file-excel-o"></i> CSV'
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="fa fa-print"></i> Print',
+                            customize: function (win) {
+                                $(win.document.body)
+                                    .css('font-size', '10pt')
+                                    .prepend(
+                                        '<img src="http://datatables.net/media/images/logo-fade.png" style="position:absolute; top:0; left:0;" />'
+                                    );
+
+                                $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                            }
+                        },
+                        {
+                            text: 'Custom Button',
+                            action: function () {
+                                alert('hi');
+                            }
+                        }
+                    ],
+            });
+    });
+        $('#exampleModal').on('show.bs.modal', function (event) {
+            '<img src="~/Images/Icon/Loading_Icon.gif" />'
+            img = event.result.getAttribute();
+            $.get(img)
+                .done(function (response) {
+                    $('#empPopup').html(response);
+                });
+        });
+    $('#exampleModal').on('shown.bs.modal', function (event) {
+        var url = '';
+        url = event.relatedTarget.getAttribute('data-url');
+        $.get(url)
+            .done(function (response) {
+                $('#empPopup').html(response);
+            });
+    });
+       
+
+        
+
+        if ($.validator) {
+            $.validator.setDefaults({
+                ignore: [] // DON'T IGNORE PLUGIN HIDDEN SELECTS, CHECKBOXES AND RADIOS!!!
+                ,
+                highlight: function (element, errorClass) {
+                    $(element).removeClass(errorClass);
+                    $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+                },
+                unhighlight: function (element, errorClass) {
+                    $(element).closest('.form-group').addClass('has-success').removeClass('has-error');
+                },
+                errorPlacement: function (error, element) {
+                    if (element.data().chosen) {
+                        {
+                            element.next().after(error);
+                        }
+                    } else {
+                        if (element.parent().hasClass("input-group")) {
+                            element.parent().next().after(error);
+                        } else {
+                            element.after(error);
+                        }
+                    }
+                }
+            });
+
+        }
+        function validateEmpForm() {
+            $('#myform').validate({
+                rules: {
+                    EmployeeName: { required: true },
+                    Designation: { required: true },
+                    Department: { required: true }                    
+                },
+                messages: {
+                    EmployeeName: { required: 'Please provide Employee Name' },
+                    Designation: { required: 'Please provide Employee Designation' },
+                    Department: { required: 'Please provide Employee Department' },
+                  
+                },
+                submitHandler: function (form) {
+                    var form = $('#myform')[0];
+                    var formData = new FormData(form);
+                    $.ajax({
+                        url: form.action,
+                        data: formData,
+                        type: 'POST',
+                        contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+                        processData: false, // NEEDED, DON'T OMIT THIS
+                        success: function (response) {                            
+                            if (response.status == 200) {                                                             
+                                $("#exampleModal").modal("hide");
+                                $.notify({
+                                    // options
+                                    title: '<strong>Success</strong>',
+                                    message: "<br>Record has been saved successfully",
+                                    icon: 'glyphicon glyphicon-ok'                        
+                                },
+                                    {
+                                    // settings
+                                    element: 'body',
+                                    //position: null,
+                                    type: "success",
+                                    //allow_dismiss: true,
+                                    //newest_on_top: false,
+                                    showProgressbar: false,
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    offset: 20,
+                                    spacing: 10,
+                                       z_index: 1051,
+                                    delay: 3300,
+                                    timer: 1000,
+
+                                });
+                                $('#myTable').DataTable().ajax.reload();
+                               //notify("saved", "App Design Pattern Mapping Updated Successfully !");
+                            }
+                            else {
+                                $.notify({
+                                    // options
+                                    title: '<strong>Error</strong>',
+                                    message: "<br>There was error an occured.",
+                                    icon: 'glyphicon glyphicon-remove-sign',
+
+                                }, {
+                                    // settings
+                                    element: 'body',
+                                    //position: null,
+                                        type: "danger",
+                                    //allow_dismiss: true,
+                                    //newest_on_top: false,
+                                    showProgressbar: false,
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    offset: 20,
+                                    spacing: 10,
+                                        z_index: 1051,
+                                    delay: 3300,
+                                    timer: 1000,
+
+                                });
+                            }
+                        }, error: function () {
+                        }
+                    });
+                    return false;
+                }
+            });
+        } 
+       
+
+
+        function DeleteData(id) {
+    if (confirm("Are you sure you want to delete ...?")) {
+        Delete(id);
+    } else {
+        return false;
+    }
+}
+
+
+        function Delete(id) {
+            var url = '@Url.Content("~/")' + "Employee/DeleteEmployee";
+
+            $.post(url, { ID: id }, function (data) {
+                if (data) {
+                    oTable = $('#myTable').DataTable();
+                    oTable.draw();
+                } else {
+                    alert("Something Went Wrong!");
+            }
+        });
+    }
+
+    </script>
+
