@@ -10,7 +10,8 @@ namespace DapperStoredProc.Data
     {
        T ExecuteReturnScalar<T>(string procrdureName, DynamicParameters param = null);
         IEnumerable<T> ReturnList<T>(string procrdureName, DynamicParameters param = null);
-        int CreateReturnInt(string StoredProcedure, DynamicParameters param = null);
+        int CreateEmployeeReturnInt(string StoredProcedure, DynamicParameters param = null);
         int Delete(string StoredProcedure, DynamicParameters param = null);
+        int CreateUserReturnInt(string StoredProcedure, DynamicParameters param = null);
     }
 }

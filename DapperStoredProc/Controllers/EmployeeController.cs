@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using DapperStoredProc.Data;
 using DapperStoredProc.Models;
+using DapperStoredProc.Models.DataTable;
 using DapperStoredProc.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -55,7 +56,7 @@ namespace DapperStoredProc.Controllers
             long result = 0;
             int Status;
             string Value;
-            ModelState.Remove("EmpId");
+           // ModelState.Remove("EmpId");
             if (ModelState.IsValid)
             {
                 result = _services.AddEmployee(employee);
@@ -140,56 +141,75 @@ namespace DapperStoredProc.Controllers
             }
             return View(employee);
         }
-        [HttpPost]
-        public IActionResult DataTable()
-        {
-            int totalRecord = 0;
-            int filterRecord = 0;
+        //[HttpPost]
+        //public IActionResult DataTable()
+        //{
+        //    int totalRecord = 0;
+        //    int filterRecord = 0;
 
-            var draw = Request.Form["draw"].FirstOrDefault();
+        //    var draw = Request.Form["draw"].FirstOrDefault();
 
-            // Sort Column Name
-            var sortCoulmn = Request.Form["sortColumn[" + Request.Form["order[0] [column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+        //    // Sort Column Name
+        //    var sortCoulmn = Request.Form["sortColumn[" + Request.Form["order[0] [column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
 
-            var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+        //    var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
 
-                //Search value from (Search box)
-            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+        //        //Search value from (Search box)
+        //    var searchValue = Request.Form["search[value]"].FirstOrDefault();
 
-            //Paging Size (10,20,50,100)
-            int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
+        //    //Paging Size (10,20,50,100)
+        //    int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
 
-            // Skip Number of Count
-            int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
+        //    // Skip Number of Count
+        //    int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
             
-            //getting all Employee data 
-            var data = _context.Set<Employee>().AsQueryable();
+        //    //getting all Employee data 
+        //    var data = _context.Set<Employee>().AsQueryable();
 
-            //get total count of data in table
-            totalRecord = data.Count();
+        //    //get total count of data in table
+        //    totalRecord = data.Count();
 
-            // search data when search value found
-            if(!string.IsNullOrEmpty(searchValue))
+        //    // search data when search value found
+        //    if(!string.IsNullOrEmpty(searchValue))
+        //    {
+        //        data = data.Where(a => a.EmployeeName.ToLower().Contains(searchValue.ToLower()) || a.Department.ToLower().Contains(searchValue.ToLower()) || a.Designation.ToLower().Contains(searchValue.ToLower())); 
+        //    }
+
+        //    //get total count of records after search 
+        //    filterRecord = data.Count();
+
+        //    //sort data
+        //    if (!string.IsNullOrEmpty(sortCoulmn) && !string.IsNullOrEmpty(sortColumnDirection)) data = data.OrderBy(sortCoulmn + " " + sortColumnDirection);
+
+        //    //pagination
+        //    var empList = data.Skip(skip).Take(pageSize).ToList();
+        //    return Json(new
+        //    {
+        //        draw = draw,
+        //        recordsTotal = totalRecord,
+        //        recordsFiltered = filterRecord,
+        //        data = empList
+        //    });
+        //}
+        [HttpPost]
+        public JsonResult GetAllEmployee()
+        {
+            var request = new DataTableRequest();
+            request.Draw = Convert.ToInt32(Request.Form["draw"].FirstOrDefault());
+            request.Start = Convert.ToInt32(Request.Form["start"].FirstOrDefault());
+            request.Length = Convert.ToInt32(Request.Form["length"].FirstOrDefault());
+            request.Search = new DataTableSearch()
             {
-                data = data.Where(a => a.EmployeeName.ToLower().Contains(searchValue.ToLower()) || a.Department.ToLower().Contains(searchValue.ToLower()) || a.Designation.ToLower().Contains(searchValue.ToLower())); 
-            }
-
-            //get total count of records after search 
-            filterRecord = data.Count();
-
-            //sort data
-            if (!string.IsNullOrEmpty(sortCoulmn) && !string.IsNullOrEmpty(sortColumnDirection)) data = data.OrderBy(sortCoulmn + " " + sortColumnDirection);
-
-            //pagination
-            var empList = data.Skip(skip).Take(pageSize).ToList();
-            return Json(new
+                Value = Request.Form["search[value]"].FirstOrDefault()
+            };
+            request.Order = new DataTableOrder[] {
+            new DataTableOrder()
             {
-                draw = draw,
-                recordsTotal = totalRecord,
-                recordsFiltered = filterRecord,
-                data = empList
-            });
-        }   
+                Dir = Request.Form["order[0][dir]"].FirstOrDefault(),
+                Column = Convert.ToInt32(Request.Form["order[0][column]"].FirstOrDefault())
+            }};
+            return Json(_services.GetAllEmployeeAsync(request).Result);
+        }
 
     }
 }

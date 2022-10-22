@@ -1,0 +1,32 @@
+﻿span.field-validation-error {
+    color: red;
+}
+
+.error {
+    float: left;
+    color: #FF0808 !important;
+}
+
+
+.has-error .form-control {
+    border-color: #E91E63;
+    color: #E91E63;
+}
+
+.has-error .cke_editor_Description {
+    border-color: #A94442;
+    color: #A94442;
+}
+
+.has-error .form-control > .select2.select2-container > .selection > .select2-selection.select2-selection--single {
+    border-color: #A94442;
+    color: #A94442;
+}
+
+textarea.error::placeholder, input.error::placeholder {
+    color: #A94442;
+}
+
+textarea.error::-webkit-input-placeholder, input.error::-webkit-input-placeholder {
+    color: #A94442;
+}

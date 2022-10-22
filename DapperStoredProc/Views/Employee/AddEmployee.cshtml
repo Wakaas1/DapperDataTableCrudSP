@@ -19,28 +19,16 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <label asp-for="Designation" class="control-label"></label>
-                    <input asp-for="Designation" class="form-control" />
-                    <label id="Designation-error" class="error" for="Designation" style="display:none"></label>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <label asp-for="Department" class="control-label"></label>
-                    <input asp-for="Department" class="form-control" />
-                    <label id="Department-error" class="error" for="Department" style="display:none"></label>
-                </div>
-            </div>
-        </div>
+        @Html.DropDownListFor(x => x.Designation, new SelectList(Enum.GetValues(typeof(Designation))), "Select Designation")
+        <br/>
+        <br/>
+        @Html.DropDownListFor(x => x.Department, new SelectList(Enum.GetValues(typeof(Department))), "Select Department")
+        
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <button type="submit" class="btn btn-primary" id="add" style="background-color:darkgreen;">Submit</button>
         </div>
+
 
     </form>
 

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using DapperStoredProc.Data;
 using DapperStoredProc.Models;
+using DapperStoredProc.Models.DataTable;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -15,13 +16,15 @@ namespace DapperStoredProc.Services
     {
         private readonly IConfiguration _configuration;
         private readonly IDapperRepo _dapperRepo;
+        private readonly IGenericRepo _genericRepo;
 
-        public EmployeeServices(IConfiguration configuration, IDapperRepo dapperRepo)
+        public EmployeeServices(IConfiguration configuration, IDapperRepo dapperRepo, IGenericRepo genericRepo)
         {
             _configuration = configuration;
             connectionString = _configuration.GetConnectionString("ConnGCU");
             providerName = "System.Data.SqlClient";
             _dapperRepo = dapperRepo;
+            _genericRepo = genericRepo;
         }
         public string connectionString { get; }
         public string providerName { get; }
@@ -52,7 +55,7 @@ namespace DapperStoredProc.Services
                 param.Add("@EmployeeName", model.EmployeeName);
                 param.Add("@Department", model.Department);
                 param.Add("@Designation", model.Designation);
-                var result = _dapperRepo.CreateReturnInt("dbo.AddEmployee", param);
+                var result = _dapperRepo.CreateEmployeeReturnInt("dbo.AddEmployee", param);
                 if (result > 0)
                 {
 
@@ -69,7 +72,7 @@ namespace DapperStoredProc.Services
             param.Add("@EmployeeName", model.EmployeeName);
             param.Add("@Department", model.Department);
             param.Add("@Designation", model.Designation);
-            var result = _dapperRepo.CreateReturnInt("dbo.UpdateEmployee", param);
+            var result = _dapperRepo.CreateEmployeeReturnInt("dbo.UpdateEmployee", param);
             
 
             return result;
@@ -79,9 +82,37 @@ namespace DapperStoredProc.Services
         {
             Dapper.DynamicParameters param = new DynamicParameters();
             param.Add("@EmpId", EmpId);
-            var emp = _dapperRepo.CreateReturnInt("dbo.DeleteEmployee", param);
+            var emp = _dapperRepo.CreateEmployeeReturnInt("dbo.DeleteEmployee", param);
 
             return emp;
         }
+        public async Task<DataTableResponse<EmployeePartial>>GetAllEmployeeAsync(DataTableRequest request)
+        {
+            var req = new ListingRequest()
+            {
+                PageNo = request.Start,
+                PageSize = request.Length,
+                SortColumn = request.Order[0].Column,
+                SortDirection = request.Order[0].Dir,
+                SearchValue = request.Search != null ? request.Search.Value.Trim() : ""
+            };
+            var depatrments = await _genericRepo.GetEmployeeAsync(req);
+            return new DataTableResponse<EmployeePartial>()
+            {
+                Draw = request.Draw,
+                RecordsTotal = depatrments[0].TotalCount,
+                RecordsFiltered = depatrments[0].FilteredCount,
+                Data = depatrments.ToArray(),
+                Error = ""
+            };
+        }
+
+
+
+
+
+
+
+
     }
 }

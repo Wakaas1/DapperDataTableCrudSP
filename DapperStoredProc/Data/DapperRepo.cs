@@ -40,13 +40,23 @@ namespace DapperStoredProc.Data
             }
 
         }
-        public int CreateReturnInt(string StoredProcedure, DynamicParameters param = null)
+        public int CreateEmployeeReturnInt(string StoredProcedure, DynamicParameters param = null)
         {
             using (SqlConnection sqlCon = new SqlConnection(connectionString))
             {
                 sqlCon.Open();
                 sqlCon.Execute(StoredProcedure, param, commandType: CommandType.StoredProcedure);
                 return param.Get<int>("EmpId");
+            }
+        }
+
+        public int CreateUserReturnInt(string StoredProcedure, DynamicParameters param = null)
+        {
+            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            {
+                sqlCon.Open();
+                sqlCon.Execute(StoredProcedure, param, commandType: CommandType.StoredProcedure);
+                return param.Get<int>("Id");
             }
         }
         public int Delete(string StoredProcedure, DynamicParameters param = null)

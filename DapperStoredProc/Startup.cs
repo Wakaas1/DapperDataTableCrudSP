@@ -7,6 +7,7 @@ using DapperStoredProc.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,10 @@ namespace DapperStoredProc
             services.AddRazorPages();
             services.AddScoped<IDapperRepo, DapperRepo>();
             services.AddScoped<IEmployeeServices, EmployeeServices>();
+            services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IGenericRepo, GenericRepo>();
+
+            //services.AddIdentityCore<IdentityUser>().AddRoles<IdentityRole>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,7 +55,7 @@ namespace DapperStoredProc
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

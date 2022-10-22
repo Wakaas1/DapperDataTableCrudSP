@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DapperDataTableCrudSP.BLL\DapperDataTableCrudSP.BLL.csproj" />
+    <ProjectReference Include="..\DapperDataTableCrudSP.DAL\DapperDataTableCrudSP.DAL.csproj" />
+    <ProjectReference Include="..\DapperStoredProc\DapperStoredProc.csproj" />
+  </ItemGroup>
+
+</Project>

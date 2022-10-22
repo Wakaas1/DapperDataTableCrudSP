@@ -1,14 +1,12 @@
 ﻿@model DapperStoredProc.Models.Employee
 
 @{
-    ViewData["Title"] = "GetEmpByID";
+    Layout = null;
 }
 
-<h1>GetEmpByID</h1>
+<h1>Employee Detail</h1>
 
-<p>
-    <a asp-action="AddEmployee">Create New</a>
-</p>
+
 <div>
     <dl class="row">
         <dt class="col-sm-2">
@@ -32,10 +30,6 @@
     </dl>
 </div>
 
-<div>
-    <a asp-action="UpdateEmployee" asp-route-id="@Model?.EmpId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
 
 
 <script>

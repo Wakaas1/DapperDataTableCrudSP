@@ -9,8 +9,6 @@ namespace DapperStoredProc.Models
     public class Employee
     {
         [Key]
-        
-
         public int EmpId { get; set; }
         [Required(ErrorMessage = "Name of Employee is Required.")][Display(Name ="Employee Name")]
         public string EmployeeName { get; set; }
@@ -20,5 +18,21 @@ namespace DapperStoredProc.Models
         public string Department { get; set; }
        
         //public string Response { get; set; }
+    }
+    public enum Department
+    {
+        English,
+        Urdu,
+        ComputerScience,
+        SoftwereEngineering,
+        IT
+    }
+    public enum Designation
+    {
+        HOD,
+        Professor,
+        AssisstantProfessor,
+        Lecturar,
+        Teacher,
     }
 }
