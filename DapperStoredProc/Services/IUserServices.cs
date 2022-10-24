@@ -7,5 +7,6 @@ namespace DapperStoredProc.Services
         int AddUser(User model);
         User GetEmpByEmail(string model);
         void CheckPassword(User model);
+        int UpadateUserImage(User model);
     }
 }

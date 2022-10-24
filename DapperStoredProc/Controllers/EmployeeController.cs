@@ -18,12 +18,12 @@ namespace DapperStoredProc.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeServices _services;
-        private readonly ApplicationDbContext _context;
+       
 
-        public EmployeeController(IEmployeeServices services, ApplicationDbContext context )
+        public EmployeeController(IEmployeeServices services)
         {
             _services = services;
-            _context = context;
+            
             
         }
         public IActionResult Index()
@@ -99,7 +99,7 @@ namespace DapperStoredProc.Controllers
             long result = 0;
             int Status;
             string Value;
-            ModelState.Remove("EmpId");
+            //ModelState.Remove("EmpId");
             if (ModelState.IsValid)
             {
                result = _services.UpdateEmployee(employee);

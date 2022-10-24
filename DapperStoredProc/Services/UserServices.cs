@@ -12,19 +12,13 @@ namespace DapperStoredProc.Services
 {
     public class UserServices : IUserServices
     {
-        //private readonly IConfiguration _configuration;
+        
         private readonly IDapperRepo _dapperRepo;
 
-        public UserServices(IConfiguration configuration, IDapperRepo dapperRepo)
+        public UserServices(IDapperRepo dapperRepo)
         {
-            //_configuration = configuration;
-            //connectionString = _configuration.GetConnectionString("ConnGCU");
-            //providerName = "System.Data.SqlClient";
             _dapperRepo = dapperRepo;
         }
-
-        //public string connectionString { get; }
-        //public string providerName { get; }
 
         public int AddUser(User model)
         {
@@ -33,6 +27,7 @@ namespace DapperStoredProc.Services
             param.Add("@Name", model.Name);
             param.Add("@Email", model.Email);
             param.Add("@Password", model.Password);
+            param.Add("@Image", model.Image);
             var result = _dapperRepo.CreateUserReturnInt("dbo.AddUser", param);
             if (result > 0)
             {
@@ -50,6 +45,21 @@ namespace DapperStoredProc.Services
             var user = _dapperRepo.ReturnList<User>("dbo.GetUserByEmail", param).FirstOrDefault();
 
             return user;
+        }
+
+        public int UpadateUserImage(User model)
+        {
+
+            Dapper.DynamicParameters param = new DynamicParameters();
+            param.Add("@Id", model.id);
+            param.Add("@Image", model.Image);
+            var result = _dapperRepo.CreateUserReturnInt("dbo.UserUpdateImage", param);
+            if (result > 0)
+            {
+
+            }
+
+            return result;
         }
         public void CheckPassword(User model)
         {

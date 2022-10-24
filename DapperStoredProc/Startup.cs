@@ -28,7 +28,7 @@ namespace DapperStoredProc
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnGCU")));
+            //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnGCU")));
             services.AddRazorPages();
             services.AddScoped<IDapperRepo, DapperRepo>();
             services.AddScoped<IEmployeeServices, EmployeeServices>();
