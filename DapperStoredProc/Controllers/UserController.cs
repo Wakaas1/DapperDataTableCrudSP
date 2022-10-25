@@ -16,7 +16,7 @@ namespace DapperStoredProc.Controllers
 
     public class UserController : Controller
     {
-        private HttpPostedFileBase imgfile;
+       
         private readonly IUserServices _user;
         private readonly IWebHostEnvironment _webHostEnvironment;
         
@@ -37,6 +37,7 @@ namespace DapperStoredProc.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterDto dto)
         {
             if (dto.Password == dto.ConfirmPassword)
@@ -66,24 +67,58 @@ namespace DapperStoredProc.Controllers
         {
                 if (CheckPassword(dto.Password, dto.Email)) 
                 {
-                TempData["Msg"] = "UserName & Password Successfully Updated.";
-                return RedirectToAction("Index");
+                //TempData["Msg"] = "UserName & Password Successfully Updated.";
+                return RedirectToAction("Index", "Employee");
                 }
            
                 else
                 {
-                TempData["Msg"] = "Invalid UserName & Password.";
-                return RedirectToAction("Index");
+                //TempData["Msg"] = "Invalid UserName & Password.";
+                return BadRequest("Invalid UserName & Password."); 
                 }
         }
    
-
         [HttpGet]
         public IActionResult ImageUpload()
         {
             return View();
         }
-      
+
+        [HttpPost]
+        public IActionResult ImageUpload(List<IFormFile> postedFiles)
+        {
+
+            string path = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            List<string> uploadedFiles = new List<string>();
+            foreach (IFormFile postedFile in postedFiles)
+            {
+                string fileName = Path.GetFileName(postedFile.FileName);
+                string imagePath = Path.Combine(path, fileName);
+                using (FileStream stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    postedFile.CopyTo(stream);
+                    uploadedFiles.Add(fileName);
+                    ViewBag.Message += string.Format("<b>{0}</b> Images.<br />", fileName);
+                }
+                var pathToDB = @"~\wwwroot\Images\" + fileName;
+                var user = new User
+                {
+                    Image = pathToDB,
+                    id  = 1
+                };
+                _user.UpadateUserImage(user);
+                
+
+                TempData["Success"] = "The product has been added!";
+            }
+                return RedirectToAction("Index");
+            
+        }
 
         //[HttpPost]
         //public IActionResult ImageUpload(User user)
@@ -130,40 +165,6 @@ namespace DapperStoredProc.Controllers
         //    return RedirectToAction("Index");
         //}
 
-
-        [HttpPost]
-        public IActionResult ImageUpload(List<IFormFile> postedFiles)
-        {
-
-            string path = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            List<string> uploadedFiles = new List<string>();
-            foreach (IFormFile postedFile in postedFiles)
-            {
-                string fileName = Path.GetFileName(postedFile.FileName);
-                string imagePath = Path.Combine(path, fileName);
-                using (FileStream stream = new FileStream(imagePath, FileMode.Create))
-                {
-                    postedFile.CopyTo(stream);
-                    uploadedFiles.Add(fileName);
-                    ViewBag.Message += string.Format("<b>{0}</b> Images.<br />", fileName);
-                }
-                var user = new User
-                {
-                    Image = imagePath
-                };
-                _user.UpadateUserImage(user);
-                
-
-                TempData["Success"] = "The product has been added!";
-            }
-                return RedirectToAction("Index");
-            
-        }
 
         //public string Uploadimgfile(HttpPostedFileBase file)
         //{

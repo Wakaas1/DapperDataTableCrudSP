@@ -14,20 +14,17 @@ namespace DapperStoredProc.Services
 {
     public class EmployeeServices : IEmployeeServices
     {
-        private readonly IConfiguration _configuration;
+      
         private readonly IDapperRepo _dapperRepo;
         private readonly IGenericRepo _genericRepo;
 
-        public EmployeeServices(IConfiguration configuration, IDapperRepo dapperRepo, IGenericRepo genericRepo)
+        public EmployeeServices( IDapperRepo dapperRepo, IGenericRepo genericRepo)
         {
-            _configuration = configuration;
-            connectionString = _configuration.GetConnectionString("ConnGCU");
-            providerName = "System.Data.SqlClient";
+          
             _dapperRepo = dapperRepo;
             _genericRepo = genericRepo;
         }
-        public string connectionString { get; }
-        public string providerName { get; }
+ 
 
       
         public IEnumerable<Employee> GetAllEmployees()
@@ -106,13 +103,6 @@ namespace DapperStoredProc.Services
                 Error = ""
             };
         }
-
-
-
-
-
-
-
 
     }
 }
