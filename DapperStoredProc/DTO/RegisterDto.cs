@@ -17,6 +17,8 @@ namespace DapperStoredProc.DTO
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
         public string Image { get; set; }
+        public string Role { get; set; }
+        public string Token { get; set; }
 
        
     }

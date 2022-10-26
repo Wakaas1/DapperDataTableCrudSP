@@ -4,9 +4,10 @@ namespace DapperStoredProc.Services
 {
     public interface IUserServices
     {
-        int AddUser(User model);
-        User GetEmpByEmail(string model);
-        void CheckPassword(User model);
-        int UpadateUserImage(User model);
+        int AddUser(Users model);
+        Users GetEmpByEmail(string model);
+        string CreatePasswordHash(string password);
+        int UpadateUserImage(Users model);
+        bool VerifyPasswordHash(string dbpassword, string password);
     }
 }

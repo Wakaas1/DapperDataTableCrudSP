@@ -9,6 +9,7 @@ using DapperStoredProc.Data;
 using DapperStoredProc.Models;
 using DapperStoredProc.Models.DataTable;
 using DapperStoredProc.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,7 @@ namespace DapperStoredProc.Controllers
             
             
         }
+        [Authorize]
         public IActionResult Index()
         {
             return View(_services.GetAllEmployees());

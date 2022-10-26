@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DapperStoredProc.Data;
 using DapperStoredProc.DTO;
 using DapperStoredProc.Models;
 using DapperStoredProc.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +22,7 @@ namespace DapperStoredProc.Controllers
        
         private readonly IUserServices _user;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        
+       
         
         
         public UserController(IUserServices user, IWebHostEnvironment webHostEnvironment)
@@ -40,16 +43,23 @@ namespace DapperStoredProc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterDto dto)
         {
-            if (dto.Password == dto.ConfirmPassword)
+            if (ModelState.IsValid)
             {
-                var user = new User
+
+                if (dto.Password == dto.ConfirmPassword)
                 {
-                    Name=dto.Name,
-                    Email=dto.Email,
-                    Password=dto.Password,
-                    Image=dto.Image
-                };
-                _user.AddUser(user);
+                    var user = new Users
+                    {
+                        Name = dto.Name,
+                        Email = dto.Email,
+                        Password = _user.CreatePasswordHash(dto.Password),
+                        Image = dto.Image,
+                        Role = dto.Role,
+                        Token = dto.Token
+
+                    };
+                    _user.AddUser(user);
+                }
             }
             else
             {
@@ -63,19 +73,34 @@ namespace DapperStoredProc.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginDto dto)
+        public async Task<IActionResult> Login(LoginDto dto)
         {
-                if (CheckPassword(dto.Password, dto.Email)) 
+            if (ModelState.IsValid)
+            {
+                var user = new Users();
+                var req = _user.GetEmpByEmail(dto.Email);
+
+                if (_user.VerifyPasswordHash(req.Password, dto.Password))
                 {
-                //TempData["Msg"] = "UserName & Password Successfully Updated.";
-                return RedirectToAction("Index", "Employee");
+                    var claims = new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.NameIdentifier,Convert.ToString(User.Identity)),
+
+                    };
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties());
+
+                    return LocalRedirect("~/");
                 }
-           
+                }
                 else
                 {
-                //TempData["Msg"] = "Invalid UserName & Password.";
-                return BadRequest("Invalid UserName & Password."); 
+                    return BadRequest("Password not macth.");
                 }
+            return LocalRedirect("~/");
+                
         }
    
         [HttpGet]
@@ -106,7 +131,7 @@ namespace DapperStoredProc.Controllers
                     ViewBag.Message += string.Format("<b>{0}</b> Images.<br />", fileName);
                 }
                 var pathToDB = @"~\wwwroot\Images\" + fileName;
-                var user = new User
+                var user = new Users
                 {
                     Image = pathToDB,
                     id  = 1
@@ -204,9 +229,10 @@ namespace DapperStoredProc.Controllers
         //    return path;
         //}
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            return View();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return LocalRedirect("~/");
         }
 
         private bool CheckPassword(string Password,string Email)

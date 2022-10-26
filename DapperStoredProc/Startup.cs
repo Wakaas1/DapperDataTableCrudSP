@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using DapperStoredProc.Data;
 using DapperStoredProc.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -17,6 +21,7 @@ namespace DapperStoredProc
 {
     public class Startup
     {
+       
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -34,6 +39,7 @@ namespace DapperStoredProc
             services.AddScoped<IEmployeeServices, EmployeeServices>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IGenericRepo, GenericRepo>();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(x => x.LoginPath = "/User/Login");
 
             //services.AddIdentityCore<IdentityUser>().AddRoles<IdentityRole>();
         }
@@ -44,6 +50,7 @@ namespace DapperStoredProc
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
             }
             else
             {
@@ -63,6 +70,7 @@ namespace DapperStoredProc
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Employee}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

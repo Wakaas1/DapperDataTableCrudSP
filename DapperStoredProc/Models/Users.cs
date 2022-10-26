@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DapperStoredProc.Models
 {
-    public class User
+    public class Users
     {
        [Key]
        public int id { get; set; }
@@ -18,12 +18,13 @@ namespace DapperStoredProc.Models
        public string Email { get; set; }
        public string Password { get; set; }
        public string Image { get; set; }
+       public string Role { get; set; }
+       public string Token { get; set; }
+       public string IsVerify { get; set; }
 
 
-        [NotMapped]
-        [FileExtension]
-        public IFormFile UploadImage { get; set; }
+      
 
-        //public HttpPostedFileBase fileBase  { get; set; }
+        
     }
 }
