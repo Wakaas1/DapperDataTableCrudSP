@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,7 @@ namespace DapperStoredProc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddControllersWithViews();
             //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnGCU")));
             services.AddRazorPages();
@@ -40,7 +42,15 @@ namespace DapperStoredProc
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IGenericRepo, GenericRepo>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(x => x.LoginPath = "/User/Login");
-
+            //services.AddTransient<IEmailServices, EmailServices>();
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+                options.SlidingExpiration = false;
+                options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/User/Login");
+                
+            });
+           
             //services.AddIdentityCore<IdentityUser>().AddRoles<IdentityRole>();
         }
 
@@ -60,6 +70,7 @@ namespace DapperStoredProc
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            
 
             app.UseRouting();
             app.UseAuthentication();

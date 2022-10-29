@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.jQuery.Unobtrusive.Validation" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DapperDataTableCrudSP.BLL\DapperDataTableCrudSP.BLL.csproj" />
     <ProjectReference Include="..\DapperDataTableCrudSP.DAL\DapperDataTableCrudSP.DAL.csproj" />
     <ProjectReference Include="..\DapperStoredProc\DapperStoredProc.csproj" />

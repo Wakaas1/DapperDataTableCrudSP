@@ -27,7 +27,7 @@ namespace DapperStoredProc.Controllers
             
             
         }
-        [Authorize]
+        [Authorize(Roles = "Editor")]
         public IActionResult Index()
         {
             return View(_services.GetAllEmployees());

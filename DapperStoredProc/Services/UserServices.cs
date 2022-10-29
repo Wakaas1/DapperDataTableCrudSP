@@ -39,8 +39,26 @@ namespace DapperStoredProc.Services
 
             return result;
         }
+        public int UpdateUser(Users model)
+        {
+            Dapper.DynamicParameters param = new DynamicParameters();
+            param.Add("@Id", model.id);
+            param.Add("@Name", model.Name);
+            param.Add("@Email", model.Email);
+            param.Add("@Password", model.Password);
+            param.Add("@Image", model.Image);
+            param.Add("@Role", model.Role);
+            param.Add("@Token", model.Token);
+            var result = _dapperRepo.CreateUserReturnInt("dbo.UpdateUser", param);
+            if (result > 0)
+            {
 
-        public Users GetEmpByEmail(string model)
+            }
+
+            return result;
+        }
+
+        public Users GetUserByEmail(string model)
         {
 
             Dapper.DynamicParameters param = new DynamicParameters();
@@ -91,6 +109,29 @@ namespace DapperStoredProc.Services
             }
         }
 
-        
+        public int UpdatePassword(string email, string password)
+        {
+            Dapper.DynamicParameters param = new DynamicParameters();
+            
+       
+            param.Add("@Email", email);
+            param.Add("@Password", password);
+            var result = _dapperRepo.CreateUserReturnInt("dbo.UpdatePassword", param);
+            if (result > 0)
+            {
+
+            }
+
+            return result;
+        }
+
+        public int UserExist(string email)
+        {
+            Dapper.DynamicParameters param = new DynamicParameters();
+
+            param.Add("@Email", email);
+            return  _dapperRepo.CreateUserReturnInt("dbo.UserExist", param);
+         
+        }
     }
 }

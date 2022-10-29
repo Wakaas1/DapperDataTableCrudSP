@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,14 +11,28 @@ namespace DapperStoredProc.DTO
 {
     public class RegisterDto
     {
-        [Key]
-        public int Id { get; set; }
+    
+        [Required(AllowEmptyStrings = false, ErrorMessage = "User Name is requierd")]
         public string Name { get; set; }
+
+        [Remote("IsUserAlreadyExists", "User")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Email is requierd")]
         public string Email { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Password is requierd")]
+        [DataType(DataType.Password)]
+        [MinLength(6, ErrorMessage = "Need min 6 character")]
         public string Password { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Confirm Password is requierd")]
+        [DataType(DataType.Password)]
+        //[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
         public string Image { get; set; }
+
         public string Role { get; set; }
+
         public string Token { get; set; }
 
        
