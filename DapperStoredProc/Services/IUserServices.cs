@@ -9,7 +9,7 @@ namespace DapperStoredProc.Services
         string CreatePasswordHash(string password);
         int UpadateUserImage(Users model);
         bool VerifyPasswordHash(string dbpassword, string password);
-        int UpdatePassword(string email, string password);
-        int UserExist(string email);
+        void UpdatePassword(string email, string password);
+        void UpdateToken(string email, string token);
     }
 }

@@ -12,20 +12,20 @@ namespace DapperStoredProc.DTO
     public class RegisterDto
     {
     
-        [Required(AllowEmptyStrings = false, ErrorMessage = "User Name is requierd")]
+        //[Required(AllowEmptyStrings = false, ErrorMessage = "User Name is requierd")]
         public string Name { get; set; }
 
         [Remote("IsUserAlreadyExists", "User")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Email is requierd")]
+        //[Required(AllowEmptyStrings = false, ErrorMessage = "Email is requierd")]
         public string Email { get; set; }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Password is requierd")]
-        [DataType(DataType.Password)]
-        [MinLength(6, ErrorMessage = "Need min 6 character")]
+        //[Required(AllowEmptyStrings = false, ErrorMessage = "Password is requierd")]
+        //[DataType(DataType.Password)]
+        //[MinLength(6, ErrorMessage = "Need min 6 character")]
         public string Password { get; set; }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Confirm Password is requierd")]
-        [DataType(DataType.Password)]
+        //[Required(AllowEmptyStrings = false, ErrorMessage = "Confirm Password is requierd")]
+        //[DataType(DataType.Password)]
         //[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 

@@ -8,14 +8,18 @@ namespace DapperStoredProc.DTO
 {
     public class ResetPassword
     {
+      
+
+        [Required]
+        public string Token { get; set; } 
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "New Password")]
         public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
-        //[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        [Compare("NewPassword", ErrorMessage = "The new password and confirma new password do not match.")]
+        public string ConfirmNewPassword { get; set; }
 
         //[Display(Name = "Return Token")]
         //public string ReturnToken { get; set; }

@@ -13,6 +13,7 @@ using DapperStoredProc.Models;
 using DapperStoredProc.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,7 @@ namespace DapperStoredProc.Controllers
 
 
         }
+
         public IActionResult Index()
         {
             return View();
@@ -49,9 +51,11 @@ namespace DapperStoredProc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterDto dto)
         {
+            if (ModelState == null)
+            {
                 Random generator = new Random();
                 string number = generator.Next(1, 10000).ToString("D4");
-                
+
                 if (dto.Password == dto.ConfirmPassword)
                 {
                     var user = new Users
@@ -61,28 +65,29 @@ namespace DapperStoredProc.Controllers
                         Password = _user.CreatePasswordHash(dto.Password),
                         Image = dto.Image,
                         Role = dto.Role,
-                        Token=number
+                        Token = number
                     };
-                     _user.AddUser(user);
-                     sendEmail(dto.Email, number);
+                    _user.AddUser(user);
+                    sendEmail(dto.Email, number);
 
-                string email = dto.Email;
+                    string email = dto.Email;
 
-                TempData["Email"] = email;
-                return RedirectToAction("ConfirmOTP");
-                    
+                    TempData["Email"] = email;
+                    return RedirectToAction("ConfirmOTP");
+
                 }
                 else
                 {
                     return BadRequest("Please enter correct detail.");
                 }
             }
+            return View();
+        }
 
 
         [AcceptVerbs("Get", "Post")]
         public IActionResult IsUserAlreadyExists(string email)
         {
-           
             var user = _user.GetUserByEmail(email);
             if (user != null)
             {
@@ -136,7 +141,7 @@ namespace DapperStoredProc.Controllers
                         var claims = new List<Claim>
                         
                     {
-                        new Claim(ClaimTypes.NameIdentifier, req.Name),
+                        new Claim(ClaimTypes.Name, req.Email),
                         new Claim(ClaimTypes.Role, req.Role),
                     };
                         //var identity = new ClaimsIdentity(claims, "DDLO");
@@ -209,14 +214,13 @@ namespace DapperStoredProc.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ForgotPassword(string email)
+        public IActionResult ForgotPassword(ForgotPassword reset, string email )
         {
             if (ModelState.IsValid)
             {
                 var user = _user.GetUserByEmail(email);
                 if (user!=null)
                 {
-
                    System.Guid guid = System.Guid.NewGuid();
                     var token = guid.ToString();
                     if (token == null)
@@ -226,23 +230,21 @@ namespace DapperStoredProc.Controllers
                     }
                     else
                     {
+                        _user.UpdateToken(email,token);
+
                         //Create URL with above token
-                        var lnkHref = "<a href='" + Url.Action("ResetPassword", "User", new { user.Email, token }, "https") + "'>Reset Password</a>";
-                        sendEmail(email, lnkHref);
+                        var lnkHref = "<a href='" + Url.Action("ResetPassword", "User", new { token }, "https") + "'>Reset Password</a>";
                         
+                        sendEmail(email, lnkHref);
                     }
-
                     TempData["tok"] = token;
-                    //TempData["Email"] = email;
-                    
-
+                    TempData["Email"] = email;
                 }
                 else
                 {
                     // If user does not exist or is not confirmed.
                     return BadRequest("Please enter your registered email.");
                 }
-
             }
             return RedirectToAction("ForgotPasswordConfirmation");
         }
@@ -252,47 +254,94 @@ namespace DapperStoredProc.Controllers
             return View();
         }
 
-
-
         //Reset Password Section
-
-        public IActionResult ResetPassword()
+        [HttpGet]
+        public IActionResult ResetPassword(string token)
         {
-            
+            ResetPassword reset = new ResetPassword
+            {
+                Token = token
+
+            };
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public IActionResult ResetPassword(ResetPassword reset)
-        //{
-        //    //var token = HttpContext.Session.GetString(token);
-        //    //var email = HttpContext.Session.GetString(Email);
-        //    Guid Token = (Guid)TempData["tok"];
-        //    //string Email = (string)TempData["Email"];
-
-        //    if (token == Token.ToString())
-        //    {
-        //        if (reset.NewPassword == reset.ConfirmPassword)
-        //        {
-        //            _user.UpdatePassword(email, reset.NewPassword);
-        //        }
-        //        else
-        //        {
-        //            return BadRequest("Password does not match.");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return BadRequest("OOP! Invalid Token.");
-        //    }
-        //    return RedirectToAction("Login");
-        //}
+        public IActionResult ResetPassword(ResetPassword reset, string token)
+        {
+            //var token = HttpContext.Session.GetString(token);
+            //var email = HttpContext.Session.GetString(Email);
+            //Guid Token = (Guid)TempData["tok"];
+            string Email = (string)TempData["Email"];
+            var user = _user.GetUserByEmail(Email);
+            if(user == null)
+            {
+                return BadRequest("something bad.");
+            }
+           
+            if (user.Token == token)
+            {
+                if (reset.NewPassword == reset.ConfirmNewPassword)
+                {
+                    var hash = _user.CreatePasswordHash(reset.NewPassword);
+                    _user.UpdatePassword(Email,hash);
+                }
+                else
+                {
+                    return BadRequest("Password does not match.");
+                }
+            }
+            else
+            {
+                return BadRequest("OOP! Invalid Token.");
+            }
+            
+            return RedirectToAction("Login");
+        }
 
         [HttpGet]
         public IActionResult ResetPasswordConfirmation()
         {
             return View();
         }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+        [HttpPost]
+     
+        public IActionResult ChangePassword(ChangePassword dto)
+        {
+           
+           if(ModelState.IsValid)
+            {
+                var email = HttpContext.Response.HttpContext.User.Identity.Name;
+                var user = _user.GetUserByEmail(email);
+                if(!_user.VerifyPasswordHash(user.Password,dto.OldPassword))
+                {
+                    return BadRequest("Your password does not macth."); 
+                }
+                if (dto.NewPassword == dto.ConfirmPassword)
+                {
+                    var hash = _user.CreatePasswordHash(dto.NewPassword);
+                    _user.UpdatePassword(email, hash);
+                }
+                else
+                {
+                    return BadRequest("Password does not match.");
+                }
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                return BadRequest("OOP! Wrong Credentials");
+            }
+        }
+
+       
 
 
         //Image Upload
@@ -338,111 +387,10 @@ namespace DapperStoredProc.Controllers
                 return RedirectToAction("Index");
             
         }
-
-        //[HttpPost]
-        //public IActionResult ImageUpload(User user)
-        //{
-        //    string imageName = "noimage.jpeg";
-        //    if (user.UploadImage != null)
-        //    {
-
-        //        string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "wwwroot/Images");
-        //        imageName = Guid.NewGuid().ToString() + "_" + user.UploadImage.FileName;
-        //        string filePath = Path.Combine(uploadsDir, imageName);
-        //        FileStream fs = new FileStream(filePath, FileMode.Create);
-        //        user.UploadImage.CopyToAsync(fs);
-        //        fs.Close();
-        //        user.Image = imageName;
-        //    }
-        //    //var user = new User();
-        //    _context.Add(user);
-        //    _context.SaveChanges();
-
-        //    TempData["Success"] = "The product has been added!";
-
-        //    return RedirectToAction("Index");
-        //}
-
-
-        //[HttpPost]
-        //public IActionResult ImageUpload(ImageUpload dto, HttpPostedFileBase imgfile)
-        //{
-
-        //    string path = Uploadimgfile(imgfile);
-        //    if (path.Equals("-1"))
-        //    {
-        //        ViewBag.error = "Image could not be uploaded....";
-        //    }
-        //    else
-        //    {
-        //        var user = new User();
-
-        //        dto.Image = path;
-        //        _user.AddUser(user);
-
-        //    }
-        //    return RedirectToAction("Index");
-        //}
-
-
-        //public string Uploadimgfile(HttpPostedFileBase file)
-        //{
-        //    string imageName = "noimage.jpeg";
-        //    string path = "-1";
-        //    string ticks = DateTime.Now.Ticks.ToString();
-        //    if (file != null && file.ContentLength > 0)
-        //    {
-        //        string extension = Path.GetExtension(file.FileName);
-        //        if (extension.ToLower().Equals(".jpg") || extension.ToLower().Equals(".jpeg") || extension.ToLower().Equals(".png"))
-        //        {
-        //            try
-        //            {
-        //                var pathtoreturn = "Images" + ticks + Path.GetFileName(file.FileName);
-        //                path = Path.Combine(_webHostEnvironment.WebRootPath,"wwwroot","Image" + ticks + Path.GetFileName(file.FileName));
-        //                file.SaveAs(path);
-        //                return pathtoreturn;
-        //                //    ViewBag.Message = "File uploaded successfully";
-        //            }
-        //            catch (Exception)
-        //            {
-        //                path = "-1";
-        //            }
-        //        }
-        //        else
-        //        {
-        //            ViewBag.Message = "Only jpg ,jpeg or png formats are acceptable....";
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ViewBag.Message = "Please select a file";
-        //        path = "-1";
-        //    }
-
-
-        //    return path;
-        //}
-
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync("DDLO");
+            await HttpContext.SignOutAsync();
             return LocalRedirect("~/");
-        }
-
-        private bool CheckPassword(string Password,string Email)
-        {
-            var user = _user.GetUserByEmail(Email);
-
-            if(user.Password==Password)
-            
-                return true;
-            return false;
-            
-
-        }
-
-        private class _customClaimsCookieSignInHelper
-        {
         }
     }
 }

@@ -109,29 +109,26 @@ namespace DapperStoredProc.Services
             }
         }
 
-        public int UpdatePassword(string email, string password)
+        public void UpdatePassword(string email, string password)
         {
             Dapper.DynamicParameters param = new DynamicParameters();
             
        
             param.Add("@Email", email);
             param.Add("@Password", password);
-            var result = _dapperRepo.CreateUserReturnInt("dbo.UpdatePassword", param);
-            if (result > 0)
-            {
-
-            }
-
-            return result;
+             _dapperRepo.Execute("dbo.UpdatePassword", param);
+          
         }
 
-        public int UserExist(string email)
+        public void UpdateToken(string email, string token)
         {
             Dapper.DynamicParameters param = new DynamicParameters();
 
+
             param.Add("@Email", email);
-            return  _dapperRepo.CreateUserReturnInt("dbo.UserExist", param);
-         
+            param.Add("@Token", token);
+             _dapperRepo.Execute("dbo.UpdateToken", param);
+
         }
     }
 }

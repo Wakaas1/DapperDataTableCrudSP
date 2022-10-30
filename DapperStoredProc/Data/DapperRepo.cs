@@ -28,6 +28,15 @@ namespace DapperStoredProc.Data
             }
 
         }
+        public void Execute(string procrdureName, DynamicParameters param )
+        {
+            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            {
+                sqlCon.Open();
+                 sqlCon.Execute(procrdureName, param, commandType: CommandType.StoredProcedure);
+            }
+
+        }
 
         //DapperORM.RetrunList<EmployeeModel> <= IEnumberable<EmployeeModel>
 
