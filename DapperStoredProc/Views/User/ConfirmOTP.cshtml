@@ -1,4 +1,4 @@
-﻿
+﻿@model DapperStoredProc.DTO.OTP
 
 
 <h1>Confirm OTP</h1>
@@ -9,13 +9,25 @@
         <div class="col-md-12">
             <form method="post">
                 <div class="form-group">
-                   
-                    <input name="otp" id="otp" class="form-control" type="number" />
-                   
+
+                    <input type="hidden" asp-for="Token" class="form-control" />
+
                 </div>
                 <button type="submit" class="btn-primary">ConfirmOTP</button>
-                </form>
-            
+            </form>
+
         </div>
     </div>
 </div>
+
+@*<script>
+
+        let response = fetch(url);
+
+        fetch(url)
+            .then(response => { })
+            .catch(error => { });
+        async function fetchToken() {
+            let response = await fetch('');
+        }
+    </script>*@

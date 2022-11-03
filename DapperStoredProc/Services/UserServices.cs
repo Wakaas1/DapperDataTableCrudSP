@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DapperStoredProc.Data;
+using DapperStoredProc.DTO;
 using DapperStoredProc.Models;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -28,9 +29,10 @@ namespace DapperStoredProc.Services
             param.Add("@Name", model.Name);
             param.Add("@Email", model.Email);
             param.Add("@Password", model.Password);
-            param.Add("@Image", model.Image);
-            param.Add("@Role", model.Role);
+            param.Add("@Image", model.Image);            
             param.Add("@Token", model.Token);
+            param.Add("@IsVerify", model.IsVerify);
+            param.Add("@TokenGeneratedDate", model.TokenGeneratedDate);
             var result = _dapperRepo.CreateUserReturnInt("dbo.AddUser", param);
             if (result > 0)
             {
@@ -47,8 +49,7 @@ namespace DapperStoredProc.Services
             param.Add("@Email", model.Email);
             param.Add("@Password", model.Password);
             param.Add("@Image", model.Image);
-            param.Add("@Role", model.Role);
-            param.Add("@Token", model.Token);
+            param.Add("@Token", model.Token);          
             var result = _dapperRepo.CreateUserReturnInt("dbo.UpdateUser", param);
             if (result > 0)
             {
@@ -56,6 +57,15 @@ namespace DapperStoredProc.Services
             }
 
             return result;
+        }
+        public Users GetUserByID(int Id)
+        {
+
+            Dapper.DynamicParameters param = new DynamicParameters();
+            param.Add("@Id", Id);
+            var user = _dapperRepo.ReturnList<Users>("dbo.GetUserByID", param).FirstOrDefault();
+
+            return user;
         }
 
         public Users GetUserByEmail(string model)
@@ -81,6 +91,15 @@ namespace DapperStoredProc.Services
             }
 
             return result;
+        }
+
+        public int DeleteUser(int Id)
+        {
+            Dapper.DynamicParameters param = new DynamicParameters();
+            param.Add("@Id", Id);
+            var user = _dapperRepo.CreateEmployeeReturnInt("dbo.DeleteUser", param);
+
+            return user;
         }
         public string CreatePasswordHash(string password)
         {
@@ -128,6 +147,32 @@ namespace DapperStoredProc.Services
             param.Add("@Email", email);
             param.Add("@Token", token);
              _dapperRepo.Execute("dbo.UpdateToken", param);
+
+        }
+
+        public IEnumerable<UserRolePartial> UserListId(int id)
+        {
+            Dapper.DynamicParameters param = new DynamicParameters();
+            param.Add("@UserId", id);
+            return _dapperRepo.ReturnList<UserRolePartial>("dbo.GetRoleByUserId", param);
+        }
+
+        public IEnumerable<UserRolePartial> UserListByRole(int id)
+        {
+            Dapper.DynamicParameters param = new DynamicParameters();
+            param.Add("@UserId", id);
+
+            return _dapperRepo.ReturnList<UserRolePartial>("dbo.GetUserByRole", param);
+        }
+
+        public void UserIsVerified(string email,bool verify)
+        {
+            Dapper.DynamicParameters param = new DynamicParameters();
+
+
+            param.Add("@Email", email);
+            param.Add("@IsVerify", verify);
+            _dapperRepo.Execute("dbo.IsAVirify", param);
 
         }
     }

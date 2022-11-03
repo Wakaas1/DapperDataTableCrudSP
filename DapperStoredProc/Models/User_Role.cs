@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace DapperStoredProc.Models
 {
-    public class EmailCredential
+    public class User_Role
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-       
+        public int UserId { get; set; }
+        public int RoleId { get; set; }
     }
 }

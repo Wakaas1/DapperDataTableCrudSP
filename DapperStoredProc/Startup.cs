@@ -41,16 +41,19 @@ namespace DapperStoredProc
             services.AddScoped<IEmployeeServices, EmployeeServices>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IGenericRepo, GenericRepo>();
+            services.AddScoped<IRoleServices, RoleServices>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(x => x.LoginPath = "/User/Login");
-            //services.AddTransient<IEmailServices, EmailServices>();
+            services.AddTransient<IEmailServices, EmailServices>();
             services.ConfigureApplicationCookie(options =>
             {
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 options.SlidingExpiration = false;
                 options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/User/Login");
                 
             });
-           
+   //         services.Configure<DataProtectionTokenProviderOptions>(opt =>
+   //opt.TokenLifespan = TimeSpan.FromHours(2));
+
             //services.AddIdentityCore<IdentityUser>().AddRoles<IdentityRole>();
         }
 

@@ -15,7 +15,7 @@ namespace DapperStoredProc.DTO
         //[Required(AllowEmptyStrings = false, ErrorMessage = "User Name is requierd")]
         public string Name { get; set; }
 
-        [Remote("IsUserAlreadyExists", "User")]
+        //[Remote("IsUserAlreadyExists", "User" , ErrorMessage = "Email Already Exist")]
         //[Required(AllowEmptyStrings = false, ErrorMessage = "Email is requierd")]
         public string Email { get; set; }
 
@@ -28,13 +28,8 @@ namespace DapperStoredProc.DTO
         //[DataType(DataType.Password)]
         //[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+        
 
-        public string Image { get; set; }
 
-        public string Role { get; set; }
-
-        public string Token { get; set; }
-
-       
     }
 }
