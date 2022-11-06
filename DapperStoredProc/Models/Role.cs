@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 
 namespace DapperStoredProc.Models
 {
-    public class Role
+    public class Role 
     {
         public int RId { get; set; }
         public string RName { get; set; }
 
-       
+
+      
+            
+        
     }
   
 }

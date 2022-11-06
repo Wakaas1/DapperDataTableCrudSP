@@ -48,7 +48,7 @@ namespace DapperStoredProc.Services
 
             Dapper.DynamicParameters param = new DynamicParameters();
             param.Add("@RId", Id);
-            var user = _dapperRepo.ReturnList<Role>("dbo.GetRoleById", param).FirstOrDefault();
+            var user = _dapperRepo.ReturnList<Role>("dbo.GetUserByRoleId", param).FirstOrDefault();
 
             return user;
         }
@@ -62,18 +62,20 @@ namespace DapperStoredProc.Services
             return user;
         }
 
+
         public IEnumerable<Role> GetAllRole()
         {
             List<Role> role = new List<Role>();
-            role = _dapperRepo.ReturnList<Role>("GetUserByRole").ToList();
+            role = _dapperRepo.ReturnList<Role>("GetAllRole").ToList();
             return (role);
         }
-
-        public IEnumerable<UserRolePartial> UserList(int id)
+        public IEnumerable<Users> UserList(Users model)
         {
             Dapper.DynamicParameters param = new DynamicParameters();
-            param.Add("@UserId", id);
-          return _dapperRepo.ReturnList<UserRolePartial>("dbo.GetRoleByUserId", param);
+            
+            param.Add("@Name", model.Name);
+            param.Add("@Email", model.Email);
+            return _dapperRepo.ReturnList<Users>("dbo.GetUserByRole", param);
         }
 
 

@@ -11,7 +11,7 @@ namespace DapperStoredProc.Services
         IEnumerable<Role> GetAllRole();
         Role GetRoleById(int Id);
         int UpdateRole(Role model);
-        IEnumerable<UserRolePartial> UserList(int id);
+        IEnumerable<Users> UserList(Users model);
     }
     
 }

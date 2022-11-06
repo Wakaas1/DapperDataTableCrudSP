@@ -36,9 +36,12 @@ namespace DapperStoredProc.Controllers
 
         }
 
-        public IActionResult Index()
+        public IActionResult Index(UserDetail uD)
         {
-            return View();
+            var user = _user.GetAllUsers(uD).ToList();
+
+
+            return View(user);
         }
         public IActionResult Register()
         {
@@ -67,9 +70,9 @@ namespace DapperStoredProc.Controllers
                         TokenGeneratedDate = now
                     };
                     _user.AddUser(user);
-                    var lnkHref = "<a href='" + Url.Action("ConfirmOTP", "User", new { token }, "https") + "'>Email Confirmation</a>";
+                    string lnkHref = "" + Url.Action("ConfirmOTP", "User", new { token }, "https") + "";
 
-                    _email.sendEmail(dto.Email,lnkHref);
+                    _email.SendEmail(dto.Email,lnkHref,dto.Name);
 
                     string email = dto.Email;
 
@@ -84,43 +87,6 @@ namespace DapperStoredProc.Controllers
             }
             return View();
         }
-
-
-
-            //if (ModelState == null)
-            //{
-            //    Random generator = new Random();
-            //    string number = generator.Next(1, 10000).ToString("D4");
-            //    int roleid = 2;
-            //    if (dto.Password == dto.ConfirmPassword)
-            //    {
-
-            //        var user = new Users
-            //        {
-            //            Name = dto.Name,
-            //            Email = dto.Email,
-            //            Password = _user.CreatePasswordHash(dto.Password),                                             
-            //            Token = number,
-            //            Role = roleid
-            //        };
-            //        _user.AddUser(user);
-            //        sendEmail(dto.Email, number);
-
-            //        string email = dto.Email;
-
-            //        TempData["Email"] = email;
-            //        return RedirectToAction("ConfirmOTP");
-
-            //    }
-            //    else
-            //    {
-            //        return BadRequest("Please enter correct detail.");
-            //    }
-            //}
-        //    return BadRequest("Wrong Credentials!...");
-        //}
-
-        
 
         [AcceptVerbs("Get", "Post")]
         public IActionResult IsUserAlreadyExists(string email)
@@ -152,7 +118,7 @@ namespace DapperStoredProc.Controllers
             string email = (string)TempData["Email"];
             var user = _user.GetUserByEmail(email);
 
-            if (user.TokenGeneratedDate.AddMinutes(30) >= DateTime.UtcNow.AddMinutes(0))
+            if (user.TokenGeneratedDate.AddMinutes(30) < DateTime.UtcNow.AddMinutes(30))
             {
                 if (user.Token == token)
                 {
@@ -170,6 +136,7 @@ namespace DapperStoredProc.Controllers
             }
             return BadRequest("Email Confirmation Link has been expired. kindly resend the link.");
         }
+
         public IActionResult Login()
         {
             return View();
@@ -217,12 +184,13 @@ namespace DapperStoredProc.Controllers
             }
             return View();
         }
-  public IActionResult Profile()
+
+        public IActionResult Profile()
         {
-            var email = HttpContext.Response.HttpContext.User.Identity.Name;
-            var user = _user.GetUserByEmail(email);
+              var email = HttpContext.Response.HttpContext.User.Identity.Name;
+              var user = _user.GetUserByEmail(email);
           
-            return View();
+               return View();
         }
 
         [HttpGet]
@@ -276,7 +244,7 @@ namespace DapperStoredProc.Controllers
                         //Create URL with above token
                         var lnkHref = "<a href='" + Url.Action("ResetPassword", "User", new { token }, "https") + "'>Reset Password</a>";
                         
-                        _email.sendEmail(email, lnkHref);
+                        _email.SendEmail(email, lnkHref,user.Name);
                     }
                    
                     TempData["Email"] = email;
@@ -437,18 +405,99 @@ namespace DapperStoredProc.Controllers
             return LocalRedirect("~/");
         }
 
-        public IActionResult ProfileView()
-        {
-            var email = HttpContext.Response.HttpContext.User.Identity.Name;
-            var user = _user.GetUserByEmail(email);
-            var pro = new ProfileView
-            {
-                Name = user.Name,
-                Email = user.Email,
-                Image = user.Image
-            };
+        //public IActionResult ProfileView()
+        //{
+        //    var email = HttpContext.Response.HttpContext.User.Identity.Name;
+        //    var user = _user.GetUserByEmail(email);
+        //    var pro = new ProfileView
+        //    {
+        //        Name = user.Name,
+        //        Email = user.Email,
+        //        Image = user.Image
+        //    };
 
-            return View(pro);
+        //    return View(pro);
+        //}
+
+      
+        // User Roles
+
+        [HttpGet]
+        public IActionResult CreateRole()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateRole([Bind("RId,RName")] Role role)
+        {
+            long result = 0;
+            int Status;
+            string Value;
+            
+            if (ModelState.IsValid)
+            {
+                result = _user.AddRole(role);
+                if (result > 0)
+                {
+                    Status = 200;
+                    Value = Url.Content("~/Design/View/");
+                }
+                else
+                {
+                    Status = 500;
+                    Value = "There is some error at server side";
+                }
+            }
+            else
+            {
+                Status = 500;
+                Value = "There is some error at client side";
+            }
+            return Json(new { status = Status, value = Value });
+        }
+        [HttpGet]
+        public IActionResult EditRole(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var user = _role.GetRoleById(id.GetValueOrDefault());
+            if (user == null)
+
+                return NotFound();
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public IActionResult EditRole(int id, [Bind("RId,RName")] Role role)
+        {
+            long result = 0;
+            int Status;
+            string Value;
+
+            if (ModelState.IsValid)
+            {
+                result = _user.UpdateRole(role);
+                if (result > 0)
+                {
+                    Status = 200;
+                    Value = Url.Content("~/Design/View/");
+                }
+                else
+                {
+                    Status = 500;
+                    Value = "There is some error at server side";
+                }
+            }
+            else
+            {
+                Status = 500;
+                Value = "There is some error at client side";
+            }
+            return Json(new { status = Status, value = Value });
         }
     }
 }

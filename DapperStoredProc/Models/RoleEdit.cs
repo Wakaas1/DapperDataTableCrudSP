@@ -7,7 +7,7 @@ namespace DapperStoredProc.Models
 {
     public class RoleEdit
     {
-        public string Role { get; set; }
+        public string roles_list { get; set; }
         public IEnumerable<Users> Members { get; set; }
         public IEnumerable<Users> NonMembers { get; set; }
         public string RoleName { get; set; }

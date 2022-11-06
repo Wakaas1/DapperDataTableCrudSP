@@ -38,27 +38,51 @@ namespace DapperStoredProc.Controllers
             {
                 ModelState.AddModelError("", "Wrong Detail Add.");
             }
-            return View();
+            return View("Index");
         }
 
         [HttpGet]
-        public IActionResult DeleteRole(int id)
+        public IActionResult EditRole(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            _role.DeleteRole(id);
-            return RedirectToAction("Index");
+            var emp = _role.GetRoleById(id.GetValueOrDefault());
+            if (emp == null)
+
+                return NotFound();
+
+            return View(emp);
         }
+
         [HttpPost]
-        public IActionResult DeleteRole(int id, Role role)
+        public IActionResult EditRole(int id, [Bind("RId,RName")] Role role)
         {
-            if (_role.DeleteRole(id) > 0)
+            long result = 0;
+            int Status;
+            string Value;
+           
+            if (ModelState.IsValid)
             {
-                return RedirectToAction("Index");
+                result = _role.UpdateRole(role);
+                if (result > 0)
+                {
+                    Status = 200;
+                    Value = Url.Content("~/Design/View/");
+                }
+                else
+                {
+                    Status = 500;
+                    Value = "There is some error at server side";
+                }
             }
-            return View(role);
+            else
+            {
+                Status = 500;
+                Value = "There is some error at client side";
+            }
+            return Json(new { status = Status, value = Value });
         }
     }
 }

@@ -16,8 +16,11 @@ namespace DapperStoredProc.Services
         bool VerifyPasswordHash(string dbpassword, string password);
         void UpdatePassword(string email, string password);
         void UpdateToken(string email, string token);
-        IEnumerable<UserRolePartial> UserListId(int id);
+        public IEnumerable<UserRolePartial> UserListId(int id);
         void UserIsVerified(string email, bool verify);
-        IEnumerable<UserRolePartial> UserListByRole(int id);
+        IEnumerable<UserDetail> GetAllUsers(UserDetail model);
+        int AddRole(Role model);
+        int UpdateRole(Role model);
+        Role GetRoleById(int Id);
     }
 }

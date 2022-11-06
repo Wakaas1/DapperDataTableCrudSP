@@ -22,38 +22,60 @@ namespace DapperStoredProc.Services
             _webHost = webHostEnvironment;
         }
 
-        public bool sendEmail(string email, string token)
+        public void SendEmail(string email, string token, string name)
         {
-            var emailTemp = _webHost.ContentRootPath + Path.DirectorySeparatorChar.ToString()
-                + "EmailTemp" + Path.DirectorySeparatorChar.ToString() + "EmailTemp.html";
 
-            var cred = _configuration.GetSection("EmailCredentials");
-            var data = cred.Get<EmailCredential>();
-            if (email == null)
+
+            string Link = token;
+
+
+
+            var emailCredential = _configuration.GetSection("EmailCredentials");
+
+            var data = emailCredential.Get<EmailCredential>();
+
+            var path = _webHost.ContentRootPath + Path.DirectorySeparatorChar.ToString()
+                + "Email" + Path.DirectorySeparatorChar.ToString() + "EmailTemp.html";
+            string pathToDb = @"wwwroot\Email\EmailTemp.html";
+
+
+
+            string mailHtmlbody = "";
+
+            using (StreamReader steamReader = File.OpenText(pathToDb))
             {
-                return false;
+                mailHtmlbody = steamReader.ReadToEnd();
             }
-            else
-            {
-                var Token = token;
-                var ToEmail = email;
-                MailMessage message = new MailMessage(new MailAddress(data.UserName, "DapperProcSP"), new MailAddress(ToEmail));
+
+
+            mailHtmlbody= mailHtmlbody.Replace("#:HrefLink:#", Link);
+
+            mailHtmlbody = mailHtmlbody.Replace("#:Name:#", name);
+            //string mailBody = string.Format(mailHtmlbody, name, Link);
+
+          
+                MailMessage message = new MailMessage(new MailAddress(data.UserName, "DapperProcSP"), new MailAddress(email));
                 message.Subject = "EmailConfirmation";
-                message.Body = "OTP :" + Token + "thanks";
+                message.Body = mailHtmlbody;
                 message.IsBodyHtml = true;
+
+
                 SmtpClient smtp = new SmtpClient();
                 smtp.Host = "smtp-mail.outlook.com";
                 smtp.Port = 587;
                 smtp.EnableSsl = true;
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+
                 System.Net.NetworkCredential credential = new System.Net.NetworkCredential();
                 credential.UserName = data.UserName;
                 credential.Password = data.Password;
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = credential;
+
                 smtp.Send(message);
-                return true;
-            }
+               
+            
 
         }
     }
