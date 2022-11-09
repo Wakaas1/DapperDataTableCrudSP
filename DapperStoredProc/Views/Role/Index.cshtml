@@ -1,44 +1,50 @@
-﻿@model IEnumerable<DapperStoredProc.DTO.UserRolePartial>
+﻿@model IEnumerable<DapperStoredProc.Models.UserDetail>
 
 @{
     ViewData["Title"] = "Index";
-    //Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="CreateRole">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-                  
             <th>
-                RoleId
+                id
             </th>
             <th>
-                RoleName
+                User Name
             </th>
-            <th>Users</th>
+            <th>
+                User Email
+            </th>
+            <th>
+                Role Assigned
+            </th>
+            <th>
+                Action
+            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>            
+        <tr>
             <td>
-                @item.RId
+                @Html.DisplayFor(modelItem => item.id)
             </td>
             <td>
-                @item.RName
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-               
+                @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.RId">Edit</a> |
-                <a class="confimDeletion" asp-action="Delete" asp-route-id="@item.RId">Delete</a>
-
+                @Html.DisplayFor(modelItem => item.roles_list)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditRole", new {  uId=item.id }) 
             </td>
         </tr>
 }

@@ -7,5 +7,6 @@ namespace DapperStoredProc.Data
     public interface IGenericRepo
     {
         Task<List<EmployeePartial>> GetEmployeeAsync(ListingRequest request);
+        Task<List<UserPartial>> GetUserAsync(ListingRequest request);
     }
 }

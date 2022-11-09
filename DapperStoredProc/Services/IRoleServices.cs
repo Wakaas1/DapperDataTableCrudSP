@@ -6,12 +6,10 @@ namespace DapperStoredProc.Services
 {
     public interface IRoleServices
     {
-        int AddRole(Role model);
-        int DeleteRole(int Id);
+        int AddRole(int userId, int roleId);
+        void RemoveRole(int userId, int roleId);
+        IEnumerable<UserDetail> GetAllUsers(UserDetail model);
         IEnumerable<Role> GetAllRole();
-        Role GetRoleById(int Id);
-        int UpdateRole(Role model);
-        IEnumerable<Users> UserList(Users model);
     }
     
 }

@@ -47,7 +47,7 @@ namespace DapperStoredProc.Data
                 parameters.Add("PageSize", request.PageSize, DbType.Int32);
                 parameters.Add("SortColumn", request.SortColumn, DbType.Int32);
                 parameters.Add("SortDirection", request.SortDirection, DbType.String);
-                return _dapperRepo.ReturnList<UserPartial>("GetAllEmpSP1", parameters).ToList();
+                return _dapperRepo.ReturnList<UserPartial>("GetAllUserSP", parameters).ToList();
             }
             catch (Exception ex)
             {

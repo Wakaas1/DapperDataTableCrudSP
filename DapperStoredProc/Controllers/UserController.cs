@@ -1,5 +1,6 @@
 ﻿using DapperStoredProc.DTO;
 using DapperStoredProc.Models;
+using DapperStoredProc.Models.DataTable;
 using DapperStoredProc.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -43,6 +44,23 @@ namespace DapperStoredProc.Controllers
 
             return View(user);
         }
+        [HttpGet]
+        public IActionResult GetUserByID(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var user = _user.GetUserByID(id.GetValueOrDefault());
+            if (user == null)
+
+                return NotFound();
+
+            return View(user);
+        }
+
+        // User Registeration
         public IActionResult Register()
         {
             return View();
@@ -88,6 +106,7 @@ namespace DapperStoredProc.Controllers
             return View();
         }
 
+        // User exist same name in db
         [AcceptVerbs("Get", "Post")]
         public IActionResult IsUserAlreadyExists(string email)
         {
@@ -101,6 +120,7 @@ namespace DapperStoredProc.Controllers
                 return Json(true);
         }
 
+        //Confirmation Link email send
         [HttpGet]
         public IActionResult ConfirmOTP(string token)
         {
@@ -136,6 +156,8 @@ namespace DapperStoredProc.Controllers
             }
             return BadRequest("Email Confirmation Link has been expired. kindly resend the link.");
         }
+
+        // Login
 
         public IActionResult Login()
         {
@@ -193,27 +215,7 @@ namespace DapperStoredProc.Controllers
                return View();
         }
 
-        [HttpGet]
-        public IActionResult DeleteUser(int? id)
-        {
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-            _user.DeleteUser(id.GetValueOrDefault());
-            return RedirectToAction("Index", "Employee");
-        }
-        
-        [HttpPost]
-        public IActionResult DeleteUser(int id, Users user)
-        {
-            if (_user.DeleteUser(id) > 0)
-            {
-                return RedirectToAction("Index", "Employee");
-            }
-            return View(user);
-        }
+        //Forgot Password 
 
         [HttpGet]
         public IActionResult ForgotPassword()
@@ -264,7 +266,8 @@ namespace DapperStoredProc.Controllers
             return View();
         }
 
-        //Reset Password Section
+
+        //Reset Password 
 
         [HttpGet]
         public IActionResult ResetPassword(string token)
@@ -317,6 +320,8 @@ namespace DapperStoredProc.Controllers
             return View();
         }
 
+
+        // Change Password after login 
         [HttpGet]
         [Authorize]
         public IActionResult ChangePassword()
@@ -352,6 +357,7 @@ namespace DapperStoredProc.Controllers
                 return BadRequest("OOP! Wrong Credentials");
             }
         }
+
 
         //Image Upload
 
@@ -419,51 +425,21 @@ namespace DapperStoredProc.Controllers
         //    return View(pro);
         //}
 
-      
+
         // User Roles
 
-        [HttpGet]
-        public IActionResult CreateRole()
-        {
-            return View();
-        }
 
-        [HttpPost]
-        public IActionResult CreateRole([Bind("RId,RName")] Role role)
-        {
-            long result = 0;
-            int Status;
-            string Value;
-            
-            if (ModelState.IsValid)
-            {
-                result = _user.AddRole(role);
-                if (result > 0)
-                {
-                    Status = 200;
-                    Value = Url.Content("~/Design/View/");
-                }
-                else
-                {
-                    Status = 500;
-                    Value = "There is some error at server side";
-                }
-            }
-            else
-            {
-                Status = 500;
-                Value = "There is some error at client side";
-            }
-            return Json(new { status = Status, value = Value });
-        }
+
+        // Update User
+
         [HttpGet]
-        public IActionResult EditRole(int? id)
+        public IActionResult UpdateUser(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var user = _role.GetRoleById(id.GetValueOrDefault());
+            var user = _user.GetUserByID(id.GetValueOrDefault());
             if (user == null)
 
                 return NotFound();
@@ -472,15 +448,15 @@ namespace DapperStoredProc.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditRole(int id, [Bind("RId,RName")] Role role)
+        public IActionResult UpdateUser(int id, [Bind("id,Name,Email,")] Users user)
         {
             long result = 0;
             int Status;
             string Value;
-
+            
             if (ModelState.IsValid)
             {
-                result = _user.UpdateRole(role);
+                result = _user.UpdateUser(user);
                 if (result > 0)
                 {
                     Status = 200;
@@ -498,6 +474,76 @@ namespace DapperStoredProc.Controllers
                 Value = "There is some error at client side";
             }
             return Json(new { status = Status, value = Value });
+        }
+
+
+        //Delete user
+        [HttpGet]
+        public IActionResult DeleteUser(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            _user.DeleteUser(id.GetValueOrDefault());
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteUser(int id, Users users)
+        {
+            if (_user.DeleteUser(id) > 0)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(users);
+        }
+
+
+        // Roles Create,Edit
+
+        public IActionResult EditRole(int uId)
+        {
+            var user = _user.GetUserByID(uId);
+            var roles = _role.GetAllRole();
+            var role = new RoleEdit
+            {
+                Email = user.Email,
+                Role = roles.ToList()
+            };
+            return View(role);
+        }
+        [HttpPost]
+        public IActionResult EditRole(int uId, int rID)
+        {
+            if (rID == 0)
+            {
+                _role.AddRole(uId, rID);
+            }
+            else
+            {
+                _role.RemoveRole(uId, rID);
+            }
+            return View();
+        }
+
+        public JsonResult GetAllUser()
+        {
+            var request = new DataTableRequest();
+            request.Draw = Convert.ToInt32(Request.Form["draw"].FirstOrDefault());
+            request.Start = Convert.ToInt32(Request.Form["start"].FirstOrDefault());
+            request.Length = Convert.ToInt32(Request.Form["length"].FirstOrDefault());
+            request.Search = new DataTableSearch()
+            {
+                Value = Request.Form["search[value]"].FirstOrDefault()
+            };
+            request.Order = new DataTableOrder[] {
+            new DataTableOrder()
+            {
+                Dir = Request.Form["order[0][dir]"].FirstOrDefault(),
+                Column = Convert.ToInt32(Request.Form["order[0][column]"].FirstOrDefault())
+            }};
+            return Json(_user.GetAllUserAsync(request).Result);
         }
     }
 }

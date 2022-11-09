@@ -93,13 +93,13 @@ namespace DapperStoredProc.Services
                 SortDirection = request.Order[0].Dir,
                 SearchValue = request.Search != null ? request.Search.Value.Trim() : ""
             };
-            var depatrments = await _genericRepo.GetEmployeeAsync(req);
+            var employee = await _genericRepo.GetEmployeeAsync(req);
             return new DataTableResponse<EmployeePartial>()
             {
                 Draw = request.Draw,
-                RecordsTotal = depatrments[0].TotalCount,
-                RecordsFiltered = depatrments[0].FilteredCount,
-                Data = depatrments.ToArray(),
+                RecordsTotal = employee[0].TotalCount,
+                RecordsFiltered = employee[0].FilteredCount,
+                Data = employee.ToArray(),
                 Error = ""
             };
         }

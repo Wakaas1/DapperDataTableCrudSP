@@ -2,6 +2,7 @@
 using DapperStoredProc.Data;
 using DapperStoredProc.DTO;
 using DapperStoredProc.Models;
+using DapperStoredProc.Models.DataTable;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,12 @@ namespace DapperStoredProc.Services
     {
         
         private readonly IDapperRepo _dapperRepo;
+        private readonly IGenericRepo _genericRepo;
 
-        public UserServices(IDapperRepo dapperRepo)
+        public UserServices(IDapperRepo dapperRepo, IGenericRepo genericRepo)
         {
             _dapperRepo = dapperRepo;
+            _genericRepo = genericRepo;
         }
 
         public int AddUser(Users model)
@@ -49,7 +52,7 @@ namespace DapperStoredProc.Services
             param.Add("@Email", model.Email);
             param.Add("@Password", model.Password);
             param.Add("@Image", model.Image);
-            param.Add("@Token", model.Token);          
+            param.Add("@Token", model.Token);
             var result = _dapperRepo.CreateUserReturnInt("dbo.UpdateUser", param);
             if (result > 0)
             {
@@ -163,6 +166,13 @@ namespace DapperStoredProc.Services
             user = _dapperRepo.ReturnList<UserDetail>("GetUserByRole").ToList();
             return (user);
         }
+
+        public IEnumerable<Role> GetAllRole(Role model)
+        {
+            List<Role> role = new List<Role>();
+            role = _dapperRepo.ReturnList<Role>("GetAllRole").ToList();
+            return (role);
+        }
         public void UserIsVerified(string email, bool verify)
         {
             Dapper.DynamicParameters param = new DynamicParameters();
@@ -176,16 +186,12 @@ namespace DapperStoredProc.Services
 
         // User Roles Create/Update
 
-        public int AddRole(Role model)
+        public int AddRole(int userId, int roleId)
         {
-            Dapper.DynamicParameters param = new DynamicParameters();
-            param.Add("@RId", -1, dbType: DbType.Int32, direction: ParameterDirection.Output);
-            param.Add("@RName", model.RName);
-
-            var result = _dapperRepo.CreateUserReturnInt("dbo.AddRole", param);
-            if (result > 0)
-            { }
-            return result;
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@UserId", userId);
+            parameters.Add("@RoleId", roleId);
+            return _dapperRepo.CreateUserReturnInt("AddUserRole", parameters);
         }
 
         public int UpdateRole(Role model)
@@ -207,6 +213,27 @@ namespace DapperStoredProc.Services
             var user = _dapperRepo.ReturnList<Role>("dbo.GetUserByRoleId", param).FirstOrDefault();
 
             return user;
+        }
+
+        public async Task<DataTableResponse<UserPartial>> GetAllUserAsync(DataTableRequest request)
+        {
+            var req = new ListingRequest()
+            {
+                PageNo = request.Start,
+                PageSize = request.Length,
+                SortColumn = request.Order[0].Column,
+                SortDirection = request.Order[0].Dir,
+                SearchValue = request.Search != null ? request.Search.Value.Trim() : ""
+            };
+            var users = await _genericRepo.GetUserAsync(req);
+            return new DataTableResponse<UserPartial>()
+            {
+                Draw = request.Draw,
+                RecordsTotal = users[0].TotalCount,
+                RecordsFiltered = users[0].FilteredCount,
+                Data = users.ToArray(),
+                Error = ""
+            };
         }
     }
 }

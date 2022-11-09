@@ -1,6 +1,8 @@
 ﻿using DapperStoredProc.DTO;
 using DapperStoredProc.Models;
+using DapperStoredProc.Models.DataTable;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DapperStoredProc.Services
 {
@@ -19,8 +21,10 @@ namespace DapperStoredProc.Services
         public IEnumerable<UserRolePartial> UserListId(int id);
         void UserIsVerified(string email, bool verify);
         IEnumerable<UserDetail> GetAllUsers(UserDetail model);
-        int AddRole(Role model);
+        int AddRole(int userId, int roleId);
         int UpdateRole(Role model);
         Role GetRoleById(int Id);
+        Task<DataTableResponse<UserPartial>> GetAllUserAsync(DataTableRequest request);
+        IEnumerable<Role> GetAllRole(Role model);
     }
 }

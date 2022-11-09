@@ -1,1 +1,54 @@
-﻿
+﻿@model DapperStoredProc.Models.RoleEdit
+
+@{
+    ViewData["Title"] = "Edit Roles";
+
+}
+
+<h1>Edit Role</h1>
+
+
+<div class="row">
+    <div class="col-md-6" >
+        @Html.DisplayFor(model => model.Email)
+    </div>
+    <div class="col-md-6">
+        <form asp-action="EditRole">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <table class="table table-bordered">
+                @if (Model.TakenRole.Count() == 0)
+                 {
+                    <tr><td>All users are members.</td></tr>
+                 }
+                else
+                {
+                    @foreach (Role user in Model.Role)
+                    {
+                        <tr>
+                            <td>@user.RName</td>
+                             <td>
+                                    <input type="checkbox" value="@user.RId" name="AddIds" />
+                             </td>
+                        </tr>
+                     }     
+                }
+                
+            </table>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-secondary" />
+                </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+
+
+
+

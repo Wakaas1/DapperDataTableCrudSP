@@ -1,9 +1,9 @@
 ﻿@model DapperStoredProc.DTO.OTP
 
 
-<h1>Confirm OTP</h1>
+<h1>Confirmation Link </h1>
 
-
+<h4>Please click on this button for verfiy email confirmation link is verified...</h4>
 <div class="container register">
     <div class="row">
         <div class="col-md-12">
@@ -13,21 +13,10 @@
                     <input type="hidden" asp-for="Token" class="form-control" />
 
                 </div>
-                <button type="submit" class="btn-primary">ConfirmOTP</button>
+                <button type="submit" class="btn-secondary">Verify</button>
             </form>
 
         </div>
     </div>
 </div>
 
-@*<script>
-
-        let response = fetch(url);
-
-        fetch(url)
-            .then(response => { })
-            .catch(error => { });
-        async function fetchToken() {
-            let response = await fetch('');
-        }
-    </script>*@
