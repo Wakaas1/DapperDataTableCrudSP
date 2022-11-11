@@ -1,0 +1,19 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore;
+@using DapperStoredProc.Models;
+@model DapperStoredProc.Models.RoleEdit
+
+@using (Html.BeginCollectionItem("RoleEdit"))
+{
+
+
+    <th>
+        <td>
+            @Html.DisplayFor(i => Model.RName)
+        </td>
+        <td>
+            @Html.CheckBoxFor(i => Model.Checked)
+        </td>
+    </th>
+    @Html.HiddenFor(i => Model.RId)
+        
+ }

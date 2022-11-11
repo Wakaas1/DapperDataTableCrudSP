@@ -25,6 +25,6 @@ namespace DapperStoredProc.Services
         int UpdateRole(Role model);
         Role GetRoleById(int Id);
         Task<DataTableResponse<UserPartial>> GetAllUserAsync(DataTableRequest request);
-        IEnumerable<Role> GetAllRole(Role model);
+        List<RoleEdit> GetAllRole(int uId);
     }
 }

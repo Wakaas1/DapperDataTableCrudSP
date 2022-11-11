@@ -499,32 +499,56 @@ namespace DapperStoredProc.Controllers
             return View(users);
         }
 
+        // Role CreateRole,EditRole
 
-        // Roles Create,Edit
-
-        public IActionResult EditRole(int uId)
+        [HttpGet]
+        public IActionResult CreateRole()
         {
-            var user = _user.GetUserByID(uId);
-            var roles = _role.GetAllRole();
-            var role = new RoleEdit
-            {
-                Email = user.Email,
-                Role = roles.ToList()
-            };
-            return View(role);
+            return View();
         }
+
         [HttpPost]
-        public IActionResult EditRole(int uId, int rID)
+        public IActionResult CreateRole(Role role)
         {
-            if (rID == 0)
+            if (ModelState.IsValid)
             {
-                _role.AddRole(uId, rID);
+                _role.AddRole(role);
             }
             else
             {
-                _role.RemoveRole(uId, rID);
+                ModelState.AddModelError("", "Wrong Detail Add.");
             }
-            return View();
+            return View("Index");
+        }
+
+        public IActionResult EditRole(int uId)
+        {
+            var user = _user.GetUserByID(uId).Email;
+            ViewBag.Email = user.ToString();
+
+            TempData["uId"] = uId;
+            return View(_role.GetAllRole(uId));
+        }
+        [HttpPost]
+        public IActionResult EditRole(List<RoleEdit> RoleEdit)
+        {
+            int UId = (int)TempData["uId"];
+            var roleChk = RoleEdit.Where(x => x.Checked == true);
+
+            foreach (var item in roleChk)
+            {
+                if (item.Checked = true)
+                {
+                    _role.AddUserRole(UId, item.RId);
+                }
+            };
+
+            var roleUchk = RoleEdit.Where(x => x.Checked == false);
+            foreach (var item in roleUchk)
+            {
+                _role.RemoveRole(UId, item.RId);
+            };
+            return RedirectToAction("Index");
         }
 
         public JsonResult GetAllUser()
@@ -545,5 +569,7 @@ namespace DapperStoredProc.Controllers
             }};
             return Json(_user.GetAllUserAsync(request).Result);
         }
+
+
     }
 }

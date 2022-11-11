@@ -68,6 +68,18 @@ namespace DapperStoredProc.Data
                 return param.Get<int>("Id");
             }
         }
+
+        public int CreateUserReturnFKInt(string StoredProcedure, DynamicParameters param = null)
+        {
+            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            {
+                sqlCon.Open();
+                sqlCon.Execute(StoredProcedure, param, commandType: CommandType.StoredProcedure);
+                return param.Get<int>("UserId");
+            }
+        }
+
+
         public int Delete(string StoredProcedure, DynamicParameters param = null)
         {
             using (SqlConnection sqlCon = new SqlConnection(connectionString))

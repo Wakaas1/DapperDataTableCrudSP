@@ -50,15 +50,7 @@
                         <li>
                             <a href=""></a>
                         </li>
-                        <li>
-                            <a href=""></a>
-                        </li>
-                        <li>
-                            <a href=""></a>
-                        </li>
-                        <li>
-                            <a href=""></a>
-                        </li>
+                        
                     </ul>
                 </li>
                 <li>
@@ -149,7 +141,7 @@
         </nav>
         <div class="container">
             <div style="width:90%; margin:0 auto" class="tablecontainer">
-                <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/User/CreateRole" data-type='Add' style="margin-top:10px;background-color:darkgreen;"> <i class="fa fa-plus"></i> Add New Role</a><br /><br />
+                <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Role/CreateRole" data-type='Add' style="margin-top:10px;background-color:darkgreen;"> <i class="fa fa-plus"></i> Add New Role</a><br /><br />
                 <table id="myTable" class="table table-bordered" style="text-align:center">
                     <thead>
                         <tr>
@@ -247,9 +239,8 @@
                     { data: "roles_list", "autoWidth": true },
                     
                     {
-                        data: "id",
-                        "render": function (data, type, row) {
-                            return '<a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/User/UpdateUser?uId=' + data + '" ><i class="fa fa-edit"></i></a>  <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/User/GetUserByID?uId=' + data + '" ><i class="fa fa-info"></i></a>  <a href="#" class="btn btn-danger" onclick=DelUser("' + data + '")><i class="fa fa-trash"></i></a>'
+                        data: "id","render": function (data, type, row) {
+                            return '<a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Role/EditRole?uId=' + data + '" > <i class="fa fa-edit"></i></a>  <a href="#" class="btn btn-danger" onclick=DelUser("' + data + '")><i class="fa fa-trash"></i></a>'
                         },
                     }
                 ],

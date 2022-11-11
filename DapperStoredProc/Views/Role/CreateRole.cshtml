@@ -1,35 +1,33 @@
 ﻿@model DapperStoredProc.Models.Role
 
 @{
-    ViewData["Title"] = "CreateRole";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
 }
 
-<h1>Create Role</h1>
+<h1>Add Role</h1>
 
-<h4>Role</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateRole">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-           
-                <input type="hidden" asp-for="RId" class="form-control" />
-                
+<form action="@Url.Content("/Role/CreateRole")" id="myform" method="post">
+
+
+    <input type="hidden" asp-for="RId" />
+    <div class="row">
+        <div class="col-lg-12">
             <div class="form-group">
-                <label asp-for="RName" name="Role Name" class="control-label"></label>
+                <label asp-for="RName" class="control-label"></label>
                 <input asp-for="RName" class="form-control" />
-                <span asp-validation-for="RName" class="text-danger"></span>
+                <label id="EmployeeName-error" class="error" for="RName" style="display:none"></label>
             </div>
-        
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+   
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="add" style="background-color:darkgreen;">Submit</button>
+    </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+</form>
+
+<script>validateEmpForm()</script>
+
 

@@ -5,12 +5,6 @@ VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DapperStoredProc", "DapperStoredProc.csproj", "{7317F3AD-9F75-498B-9413-7769AE5FD60E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DapperDataTableCrudSP.BLL", "..\DapperDataTableCrudSP.BLL\DapperDataTableCrudSP.BLL.csproj", "{AACA1B28-EE4C-43C0-8508-42973A9B53C0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DapperDataTableCrudSP.DAL", "..\DapperDataTableCrudSP.DAL\DapperDataTableCrudSP.DAL.csproj", "{E57E1BF6-6069-4397-801E-6E7F02BAD330}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DapperDataTableCrudSP.Domain", "..\DapperDataTableCrudSP.Domain\DapperDataTableCrudSP.Domain.csproj", "{391E68D7-B7F6-48B6-B5B6-DE533CE3CFB6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,18 +15,6 @@ Global
 		{7317F3AD-9F75-498B-9413-7769AE5FD60E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7317F3AD-9F75-498B-9413-7769AE5FD60E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7317F3AD-9F75-498B-9413-7769AE5FD60E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AACA1B28-EE4C-43C0-8508-42973A9B53C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AACA1B28-EE4C-43C0-8508-42973A9B53C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AACA1B28-EE4C-43C0-8508-42973A9B53C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AACA1B28-EE4C-43C0-8508-42973A9B53C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E57E1BF6-6069-4397-801E-6E7F02BAD330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E57E1BF6-6069-4397-801E-6E7F02BAD330}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E57E1BF6-6069-4397-801E-6E7F02BAD330}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E57E1BF6-6069-4397-801E-6E7F02BAD330}.Release|Any CPU.Build.0 = Release|Any CPU
-		{391E68D7-B7F6-48B6-B5B6-DE533CE3CFB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{391E68D7-B7F6-48B6-B5B6-DE533CE3CFB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{391E68D7-B7F6-48B6-B5B6-DE533CE3CFB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{391E68D7-B7F6-48B6-B5B6-DE533CE3CFB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

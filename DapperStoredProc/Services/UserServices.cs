@@ -167,11 +167,11 @@ namespace DapperStoredProc.Services
             return (user);
         }
 
-        public IEnumerable<Role> GetAllRole(Role model)
+        public List<RoleEdit> GetAllRole(int uId)
         {
-            List<Role> role = new List<Role>();
-            role = _dapperRepo.ReturnList<Role>("GetAllRole").ToList();
-            return (role);
+            DynamicParameters param = new DynamicParameters();
+            param.Add("@userid", uId);
+            return _dapperRepo.ReturnList<RoleEdit>("GetAllRole", param).ToList();
         }
         public void UserIsVerified(string email, bool verify)
         {
