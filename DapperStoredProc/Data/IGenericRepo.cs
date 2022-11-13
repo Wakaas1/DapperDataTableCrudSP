@@ -8,5 +8,6 @@ namespace DapperStoredProc.Data
     {
         Task<List<EmployeePartial>> GetEmployeeAsync(ListingRequest request);
         Task<List<UserPartial>> GetUserAsync(ListingRequest request);
+        Task<List<EmployeePartial>> GetAllEmployee(ListingRequestDT request);
     }
 }

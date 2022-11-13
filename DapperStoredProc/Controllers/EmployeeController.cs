@@ -27,7 +27,8 @@ namespace DapperStoredProc.Controllers
             
             
         }
-        [Authorize]
+
+        [Authorize/*(Roles = "Admin")*/]
         public IActionResult Index()
         {
             return View(_services.GetAllEmployees());
@@ -193,8 +194,27 @@ namespace DapperStoredProc.Controllers
         //        data = empList
         //    });
         //}
+        //[HttpPost]
+        //public JsonResult GetAllEmployee()
+        //{
+        //    var request = new DataTableRequest();
+        //    request.Draw = Convert.ToInt32(Request.Form["draw"].FirstOrDefault());
+        //    request.Start = Convert.ToInt32(Request.Form["start"].FirstOrDefault());
+        //    request.Length = Convert.ToInt32(Request.Form["length"].FirstOrDefault());
+        //    request.Search = new DataTableSearch()
+        //    {
+        //        Value = Request.Form["search[value]"].FirstOrDefault()
+        //    };
+        //    request.Order = new DataTableOrder[] {
+        //    new DataTableOrder()
+        //    {
+        //        Dir = Request.Form["order[0][dir]"].FirstOrDefault(),
+        //        Column = Convert.ToInt32(Request.Form["order[0][column]"].FirstOrDefault())
+        //    }};
+        //    return Json(_services.GetAllEmployeeAsync(request).Result);
+        //}
         [HttpPost]
-        public JsonResult GetAllEmployee()
+        public JsonResult GetAllEmployeeDT()
         {
             var request = new DataTableRequest();
             request.Draw = Convert.ToInt32(Request.Form["draw"].FirstOrDefault());
@@ -207,11 +227,10 @@ namespace DapperStoredProc.Controllers
             request.Order = new DataTableOrder[] {
             new DataTableOrder()
             {
-                Dir = Request.Form["order[0][dir]"].FirstOrDefault(),
-                Column = Convert.ToInt32(Request.Form["order[0][column]"].FirstOrDefault())
+                Dir = Request.Form["order[0][dir]"].FirstOrDefault()
+                
             }};
-            return Json(_services.GetAllEmployeeAsync(request).Result);
+            return Json(_services.GetAllEmployeeDT(request).Result);
         }
-
     }
 }

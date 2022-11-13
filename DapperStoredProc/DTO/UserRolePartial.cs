@@ -16,7 +16,6 @@ namespace DapperStoredProc.DTO
         public string Token { get; set; }
         public string IsVerify { get; set; }
 
-     
     }
     public partial class UserRolePartial
     {

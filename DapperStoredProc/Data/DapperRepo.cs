@@ -79,6 +79,16 @@ namespace DapperStoredProc.Data
             }
         }
 
+        public int CreateUserReturnRoleInt(string StoredProcedure, DynamicParameters param = null)
+        {
+            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            {
+                sqlCon.Open();
+                sqlCon.Execute(StoredProcedure, param, commandType: CommandType.StoredProcedure);
+                return param.Get<int>("RId");
+            }
+        }
+
 
         public int Delete(string StoredProcedure, DynamicParameters param = null)
         {

@@ -23,9 +23,9 @@ namespace DapperStoredProc.Services
         public int AddRole(Role model)
         {
             DynamicParameters param = new DynamicParameters();
-            param.Add("@Id", -1, dbType: DbType.Int32, direction: ParameterDirection.Output);
+            param.Add("@RId", -1, dbType: DbType.Int32, direction: ParameterDirection.Output);
             param.Add("@RName", model.RName);
-            return _dapperRepo.CreateUserReturnFKInt("AddRole", param);
+            return _dapperRepo.CreateUserReturnRoleInt("AddRole", param);
         }
 
 

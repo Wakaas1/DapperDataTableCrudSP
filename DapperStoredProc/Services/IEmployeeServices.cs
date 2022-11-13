@@ -13,5 +13,6 @@ namespace DapperStoredProc.Services
         public int UpdateEmployee(Employee model);
         Task<DataTableResponse<EmployeePartial>> GetAllEmployeeAsync(DataTableRequest request);
         public int DeleteEmployee(int EmpId);
+        Task<DataTableResponse<EmployeePartial>> GetAllEmployeeDT(DataTableRequest request);
     }
 }

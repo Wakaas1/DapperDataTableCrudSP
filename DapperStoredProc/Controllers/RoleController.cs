@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DapperStoredProc.DTO;
 using DapperStoredProc.Models;
 using DapperStoredProc.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DapperStoredProc.Controllers
@@ -19,6 +20,8 @@ namespace DapperStoredProc.Controllers
             _role = role;
             _user = user;
         }
+
+        //[Authorize(Roles = "Admin")]
         public IActionResult Index(UserDetail uD)
         {
             var user = _role.GetAllUsers(uD).ToList();
@@ -36,19 +39,16 @@ namespace DapperStoredProc.Controllers
         [HttpPost]
         public IActionResult CreateRole(Role role)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _role.AddRole(role);
-            }
-            else
-            {
-                ModelState.AddModelError("", "Wrong Detail Add.");
-            }
+            //}
+            //else
+            //{
+            //    ModelState.AddModelError("", "Wrong Detail Add.");
+            //}
             return View("Index");
         }
-
-
-
         public IActionResult EditRole(int uId)
         {
             

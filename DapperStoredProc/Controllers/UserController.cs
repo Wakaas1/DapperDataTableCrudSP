@@ -37,6 +37,7 @@ namespace DapperStoredProc.Controllers
 
         }
 
+        //[Authorize(Roles = "Admin")]
         public IActionResult Index(UserDetail uD)
         {
             var user = _user.GetAllUsers(uD).ToList();
@@ -498,59 +499,8 @@ namespace DapperStoredProc.Controllers
             }
             return View(users);
         }
-
-        // Role CreateRole,EditRole
-
-        [HttpGet]
-        public IActionResult CreateRole()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult CreateRole(Role role)
-        {
-            if (ModelState.IsValid)
-            {
-                _role.AddRole(role);
-            }
-            else
-            {
-                ModelState.AddModelError("", "Wrong Detail Add.");
-            }
-            return View("Index");
-        }
-
-        public IActionResult EditRole(int uId)
-        {
-            var user = _user.GetUserByID(uId).Email;
-            ViewBag.Email = user.ToString();
-
-            TempData["uId"] = uId;
-            return View(_role.GetAllRole(uId));
-        }
-        [HttpPost]
-        public IActionResult EditRole(List<RoleEdit> RoleEdit)
-        {
-            int UId = (int)TempData["uId"];
-            var roleChk = RoleEdit.Where(x => x.Checked == true);
-
-            foreach (var item in roleChk)
-            {
-                if (item.Checked = true)
-                {
-                    _role.AddUserRole(UId, item.RId);
-                }
-            };
-
-            var roleUchk = RoleEdit.Where(x => x.Checked == false);
-            foreach (var item in roleUchk)
-            {
-                _role.RemoveRole(UId, item.RId);
-            };
-            return RedirectToAction("Index");
-        }
-
+       
+        // Data Table ,Searching,sorting,Paging,Total Count,Filtering
         public JsonResult GetAllUser()
         {
             var request = new DataTableRequest();

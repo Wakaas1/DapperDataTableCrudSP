@@ -382,7 +382,7 @@
         return false;
     }
 }
-        function Delete(uId) {
+        function Delete(id) {
             var url = '@Url.Content("~/")' + "User/DeleteUser";
 
             $.post(url, { ID: id }, function (data) {

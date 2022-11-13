@@ -21,10 +21,7 @@ namespace DapperStoredProc.Services
         public IEnumerable<UserRolePartial> UserListId(int id);
         void UserIsVerified(string email, bool verify);
         IEnumerable<UserDetail> GetAllUsers(UserDetail model);
-        int AddRole(int userId, int roleId);
-        int UpdateRole(Role model);
-        Role GetRoleById(int Id);
         Task<DataTableResponse<UserPartial>> GetAllUserAsync(DataTableRequest request);
-        List<RoleEdit> GetAllRole(int uId);
+        
     }
 }

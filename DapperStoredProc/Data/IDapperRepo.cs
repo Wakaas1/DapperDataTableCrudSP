@@ -15,5 +15,6 @@ namespace DapperStoredProc.Data
         int CreateUserReturnInt(string StoredProcedure, DynamicParameters param = null);
         void Execute(string procrdureName, DynamicParameters param);
         int CreateUserReturnFKInt(string StoredProcedure, DynamicParameters param = null);
+        int CreateUserReturnRoleInt(string StoredProcedure, DynamicParameters param = null);
     }
 }

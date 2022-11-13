@@ -54,7 +54,23 @@ namespace DapperStoredProc.Data
                 throw new Exception(ex.Message, ex);
             }
         }
-
+        public async Task<List<EmployeePartial>> GetAllEmployee(ListingRequestDT request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("SearchText", request.SearchText, DbType.String);
+                parameters.Add("SortExpression", request.SortExpression, DbType.String);
+                parameters.Add("StartRowIndex", request.StartRowIndex, DbType.Int32);
+                parameters.Add("PageSize", request.PageSize, DbType.Int32);
+                
+                return _dapperRepo.ReturnList<EmployeePartial>("GetAllEmpDT", parameters).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
 
 
 

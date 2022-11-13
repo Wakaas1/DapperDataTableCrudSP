@@ -97,7 +97,26 @@ namespace DapperStoredProc.Services
             return new DataTableResponse<EmployeePartial>()
             {
                 Draw = request.Draw,
-                RecordsTotal = employee[0].TotalCount,
+                RecordsTotal = employee[0].TotalRows,
+                RecordsFiltered = employee[0].FilteredCount,
+                Data = employee.ToArray(),
+                Error = ""
+            };
+        }
+        public async Task<DataTableResponse<EmployeePartial>> GetAllEmployeeDT(DataTableRequest request)
+        {
+            var req = new ListingRequestDT()
+            {
+                StartRowIndex = request.Start,
+                PageSize = request.Length,                
+                SortExpression = request.Order[0].Dir,
+                SearchText = request.Search != null ? request.Search.Value.Trim() : ""
+            };
+            var employee = await _genericRepo.GetAllEmployee(req);
+            return new DataTableResponse<EmployeePartial>()
+            {
+                Draw = request.Draw,
+                RecordsTotal = employee[0].TotalRows,
                 RecordsFiltered = employee[0].FilteredCount,
                 Data = employee.ToArray(),
                 Error = ""
