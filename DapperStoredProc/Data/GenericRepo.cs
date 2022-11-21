@@ -24,13 +24,14 @@ namespace DapperStoredProc.Data
         {
             try
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("SearchValue", request.SearchValue, DbType.String);
-                parameters.Add("PageNo", request.PageNo, DbType.Int32);
-                parameters.Add("PageSize", request.PageSize, DbType.Int32);
-                parameters.Add("SortColumn", request.SortColumn, DbType.Int32);
-                parameters.Add("SortDirection", request.SortDirection, DbType.String);
-                return _dapperRepo.ReturnList<EmployeePartial>("GetAllEmpSP1", parameters).ToList();
+                Dapper.DynamicParameters param = new DynamicParameters();
+                param.Add("SearchValue", request.SearchValue, DbType.String);
+                param.Add("PageNo", request.PageNo, DbType.Int32);
+                param.Add("PageSize", request.PageSize, DbType.Int32);
+                param.Add("SortColumn", request.SortColumn, DbType.Int32);
+                param.Add("SortDirection", request.SortDirection, DbType.String);
+
+                return _dapperRepo.ReturnList<EmployeePartial>("GetAllEmpSP1", param).ToList();
             }
             catch (Exception ex)
             {
@@ -41,40 +42,74 @@ namespace DapperStoredProc.Data
         {
             try
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("SearchValue", request.SearchValue, DbType.String);
-                parameters.Add("PageNo", request.PageNo, DbType.Int32);
-                parameters.Add("PageSize", request.PageSize, DbType.Int32);
-                parameters.Add("SortColumn", request.SortColumn, DbType.Int32);
-                parameters.Add("SortDirection", request.SortDirection, DbType.String);
-                return _dapperRepo.ReturnList<UserPartial>("GetAllUserSP", parameters).ToList();
+                Dapper.DynamicParameters param = new DynamicParameters();
+                param.Add("SearchValue", request.SearchValue, DbType.String);
+                param.Add("PageNo", request.PageNo, DbType.Int32);
+                param.Add("PageSize", request.PageSize, DbType.Int32);
+                param.Add("SortColumn", request.SortColumn, DbType.Int32);
+                param.Add("SortDirection", request.SortDirection, DbType.String);
+
+                return _dapperRepo.ReturnList<UserPartial>("GetAllUserSP", param).ToList();
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex);
             }
         }
-        public async Task<List<EmployeePartial>> GetAllEmployee(ListingRequestDT request)
+        public async Task<List<EmployeePartial>> GetAllEmployee(DTReq request)
         {
             try
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("SearchText", request.SearchText, DbType.String);
-                parameters.Add("SortExpression", request.SortExpression, DbType.String);
-                parameters.Add("StartRowIndex", request.StartRowIndex, DbType.Int32);
-                parameters.Add("PageSize", request.PageSize, DbType.Int32);
+                Dapper.DynamicParameters param = new DynamicParameters();
+                param.Add("SearchText", request.SearchText, DbType.String);
+                param.Add("SortExpression", request.SortExpression, DbType.String);
+                param.Add("StartRowIndex", request.StartRowIndex, DbType.Int32);
+                param.Add("PageSize", request.PageSize, DbType.Int32);
                 
-                return _dapperRepo.ReturnList<EmployeePartial>("GetAllEmpDT", parameters).ToList();
+
+                return _dapperRepo.ReturnList<EmployeePartial>("GetAllEmpDT", param).ToList();
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex);
             }
         }
+        public async Task<DataTableResponse<EmployeePartial>> GetAllEmployeeMultiple(DTReq request)
+        {
+            try
+            {
+                Dapper.DynamicParameters param = new DynamicParameters();
+                param.Add("SearchText", request.SearchText, DbType.String);
+                param.Add("SortExpression", request.SortExpression, DbType.String);
+                param.Add("StartRowIndex", request.StartRowIndex, DbType.Int32);
+                param.Add("PageSize", request.PageSize, DbType.Int32);
 
+                return await _dapperRepo.ReturnListMultiple<EmployeePartial>("GetAllEmpDT", param);
+               
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+        public async Task<DataTableResponse<UserPartial>> GetAllUserMultiple(DTReq request)
+        {
+            try
+            {
+                Dapper.DynamicParameters param = new DynamicParameters();
+                param.Add("SearchText", request.SearchText, DbType.String);
+                param.Add("SortExpression", request.SortExpression, DbType.String);
+                param.Add("StartRowIndex", request.StartRowIndex, DbType.Int32);
+                param.Add("PageSize", request.PageSize, DbType.Int32);
 
+                return await _dapperRepo.ReturnListMultiple<UserPartial>("GetAllUserDT", param);
 
-
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
 
 
 

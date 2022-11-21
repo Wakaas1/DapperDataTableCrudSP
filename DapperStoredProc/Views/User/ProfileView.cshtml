@@ -10,29 +10,24 @@
 <div>
     <h4>ProfileView</h4>
     <hr />
-    <img src="@Model.Image"/>
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Email)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Email)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Image)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
-        </dd>
     </dl>
+    <img src="@Model.Image" alt="Alternate Text" class="image_Profile" />
+    <a asp-action="ImageUpload" asp-controller="User" class="btn-secondary">Upload Image</a>
 </div>
 <div>
     @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index" asp-controller="Employee">Back to List</a>
+    <a asp-action="Index">Back to List</a>
 </div>

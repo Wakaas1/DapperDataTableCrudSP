@@ -81,12 +81,12 @@ namespace DapperStoredProc.Services
             return user;
         }
 
-        public int UpadateUserImage(Users model)
+        public int UpadateUserImage(string image,int id)
         {
 
             Dapper.DynamicParameters param = new DynamicParameters();
-            param.Add("@Id", model.id);
-            param.Add("@Image", model.Image);
+            param.Add("@Id", id);
+            param.Add("@Image", image);
             var result = _dapperRepo.CreateUserReturnInt("dbo.UserUpdateImage", param);
             if (result > 0)
             {
@@ -96,11 +96,26 @@ namespace DapperStoredProc.Services
             return result;
         }
 
-        public int DeleteUser(int Id)
+        public int DeleteUserImage(Users model)
+        {
+
+            Dapper.DynamicParameters param = new DynamicParameters();
+            param.Add("@Id", model.id);
+            param.Add("@Image", model.Image);
+            var result = _dapperRepo.CreateUserReturnInt("dbo.DeleteUserImage", param);
+            if (result > 0)
+            {
+
+            }
+
+            return result;
+        }
+        public int DeleteUser(int id)
         {
             Dapper.DynamicParameters param = new DynamicParameters();
-            param.Add("@Id", Id);
-            var user = _dapperRepo.CreateEmployeeReturnInt("dbo.DeleteUser", param);
+            param.Add("@Id", id);
+            
+            var user = _dapperRepo.CreateUserReturnInt("dbo.DeleteUser", param);
 
             return user;
         }
@@ -191,12 +206,26 @@ namespace DapperStoredProc.Services
             var users = await _genericRepo.GetUserAsync(req);
             return new DataTableResponse<UserPartial>()
             {
-                Draw = request.Draw,
-                RecordsTotal = users[0].TotalCount,
-                RecordsFiltered = users[0].FilteredCount,
-                Data = users.ToArray(),
-                Error = ""
+                draw = request.Draw,
+                recordsTotal = users[0].TotalCount,
+                recordsFiltered = users[0].FilteredCount,
+                data = users.ToList(),
+                error = ""
             };
+        }
+
+        public async Task<DataTableResponse<UserPartial>> GetAllUserDT(DataTableRequest request)
+        {
+            var req = new DTReq()
+            {
+                StartRowIndex = request.Start,
+                PageSize = request.Length,
+                SortExpression = request.Order[0].Dir,
+                SearchText = request.Search != null ? request.Search.Value.Trim() : ""
+            };
+            
+                return await _genericRepo.GetAllUserMultiple(req);
+            
         }
     }
 }

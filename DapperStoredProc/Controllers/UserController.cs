@@ -37,7 +37,7 @@ namespace DapperStoredProc.Controllers
 
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User,Ceo,Editor,Manager,AM,Director")]
         public IActionResult Index(UserDetail uD)
         {
             var user = _user.GetAllUsers(uD).ToList();
@@ -70,6 +70,25 @@ namespace DapperStoredProc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterDto dto)
         {
+
+            string date = DateTime.UtcNow.ToString();
+
+
+            string imageName = "User.png";
+            if (dto.UploadImage != null)
+            {
+                string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "/User/Img");
+                imageName = Guid.NewGuid().ToString() + "_" + dto.UploadImage.FileName + date;
+                string filePath = Path.Combine(uploadsDir, imageName);
+                FileStream fs = new FileStream(filePath, FileMode.Create);
+                 dto.UploadImage.CopyToAsync(fs);
+                fs.Close();
+            }
+
+            dto.Image = imageName;
+
+            
+
             if (ModelState.IsValid)
             {
                 System.Guid guid = System.Guid.NewGuid();
@@ -86,7 +105,8 @@ namespace DapperStoredProc.Controllers
                         Password = _user.CreatePasswordHash(dto.Password),
                         Token = token,
                         IsVerify = false,
-                        TokenGeneratedDate = now
+                        TokenGeneratedDate = now,
+                        Image = imageName
                     };
                     _user.AddUser(user);
                     string lnkHref = "" + Url.Action("ConfirmOTP", "User", new { token }, "https") + "";
@@ -207,7 +227,55 @@ namespace DapperStoredProc.Controllers
             }
             return View();
         }
+        private void SignInUser(Users currentUser, bool isPersistent)
+        {
+            //Initialization
+            var claims = new List<Claim>();
 
+            try
+            {   
+                //setting
+                claims.Add(new Claim(ClaimTypes.Name, currentUser.Name));
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, currentUser.id.ToString()));
+                //custom claims
+                claims.Add(new Claim("id", currentUser.id.ToString()));
+                claims.Add(new Claim("Name", currentUser.Name));
+                claims.Add(new Claim("Email", currentUser.Email));
+                claims.Add(new Claim("Image", currentUser.Image.ToString()));
+                // Id Profile Picutue
+                   
+                
+                var identity = new ClaimsIdentity(claims, "DDLO");
+
+                 HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                          new ClaimsPrincipal(identity),
+                          new AuthenticationProperties
+                          {
+                              ExpiresUtc = DateTime.UtcNow.AddMinutes(10),
+                              IsPersistent = true
+                          });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private void ClaimIdentities(string username, bool isPersistent)
+        {
+            //Initialization
+            var claims = new List<Claim>();
+            try
+            {
+                //setting
+                claims.Add(new Claim(ClaimTypes.Name, username));
+                var ClaimIdenties = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public IActionResult Profile()
         {
               var email = HttpContext.Response.HttpContext.User.Identity.Name;
@@ -369,62 +437,161 @@ namespace DapperStoredProc.Controllers
         }
 
         [HttpPost]
-        public IActionResult ImageUpload(List<IFormFile> postedFiles)
+        public IActionResult ImageUpload(ImageModel dto)
         {
-
-            string path = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
-            if (!Directory.Exists(path))
+            var email = HttpContext.Response.HttpContext.User.Identity.Name;
+            var userimg = _user.GetUserByEmail(email).Image;
+            string date = DateTime.UtcNow.ToString();
+            
+            if (dto.ImageFile != null)
             {
-                Directory.CreateDirectory(path);
-            }
+                string uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "/User/Img");
 
-            List<string> uploadedFiles = new List<string>();
-            foreach (IFormFile postedFile in postedFiles)
-            {
-                string fileName = Path.GetFileName(postedFile.FileName);
-                string imagePath = Path.Combine(path, fileName);
-                using (FileStream stream = new FileStream(imagePath, FileMode.Create))
+                if (!string.Equals(userimg, "User.png"))
                 {
-                    postedFile.CopyTo(stream);
-                    uploadedFiles.Add(fileName);
-                    ViewBag.Message += string.Format("<b>{0}</b> Images.<br />", fileName);
+                    string oldImagePath = Path.Combine(uploadsDir, userimg);
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
                 }
-                var email = HttpContext.Response.HttpContext.User.Identity.Name;
-                var userId = _user.GetUserByEmail(email).id;
-                var pathToDB = @"~\wwwroot\Images\" + fileName;
-                var user = new Users
-                {
-                    id = userId,
-                    Image = pathToDB
+                
+                string imageName = Guid.NewGuid().ToString() + "" + dto.ImageFile.FileName + "" + date;
+                string filePath = Path.Combine(uploadsDir, imageName);
+                FileStream fs = new FileStream(filePath, FileMode.Create);
+                dto.ImageFile.CopyToAsync(fs);
+                fs.Close();
+                dto.ImageName = imageName;
+            }
+            
+            var userid = _user.GetUserByEmail(email).id;
+            _user.UpadateUserImage(dto.ImageName, userid);
+            return View();
+
+        }
+
+
+        //public IActionResult ImageUpload(List<IFormFile> postedFiles)
+        //{
+
+        //    string path = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
+        //    if (!Directory.Exists(path))
+        //    {
+        //        Directory.CreateDirectory(path);
+        //    }
+
+        //    List<string> uploadedFiles = new List<string>();
+        //    foreach (IFormFile postedFile in postedFiles)
+        //    {
+        //        string fileName = Path.GetFileName(postedFile.FileName);
+        //        string imagePath = Path.Combine(path, fileName);
+        //        using (FileStream stream = new FileStream(imagePath, FileMode.Create))
+        //        {
+        //            postedFile.CopyTo(stream);
+        //            uploadedFiles.Add(fileName);
+        //            ViewBag.Message += string.Format("<b>{0}</b> Images.<br />", fileName);
+        //        }
+        //        var email = HttpContext.Response.HttpContext.User.Identity.Name;
+        //        var userId = _user.GetUserByEmail(email).id;
+        //        var pathToDB = @"~\wwwroot\Images\" + fileName;
+        //        var user = new Users
+        //        {
+        //            id = userId,
+        //            Image = pathToDB
                     
-                };
-                _user.UpadateUserImage(user);
+        //        };
+        //        _user.UpadateUserImage(user);
                 
 
-                TempData["Success"] = "The product has been added!";
-            }
-                return RedirectToAction("Index", "Employee");
+        //        TempData["Success"] = "The product has been added!";
+        //    }
+        //        return RedirectToAction("Index", "Employee");
             
+        //}
+        [HttpGet]
+        public IActionResult CreateImage()
+        {
+            return View();
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        //public IActionResult CreateImage([Bind("ImageId,Title,ImageName")] ImageModel imageModel)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        //Save image to wwwroot/image
+        //        string wwwRootPath = _webHostEnvironment.WebRootPath;
+        //        string fileName = Path.GetFileNameWithoutExtension(imageModel.ImageFile.FileName);
+        //        string extension = Path.GetExtension(imageModel.ImageFile.FileName);
+        //        imageModel.ImageName = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+        //        string path = Path.Combine(wwwRootPath , fileName);
+        //        using (var fileStream = new FileStream(path, FileMode.Create))
+        //        {
+        //            imageModel.ImageFile.CopyTo(fileStream);
+        //        }
+        //        var email = HttpContext.Response.HttpContext.User.Identity.Name;
+        //        var userId = _user.GetUserByEmail(email).id;
+        //        var pathToDB = @"~\wwwroot\Images\" + fileName;
+        //        var user = new Users
+        //        {
+        //            id = userId,
+        //            Image = pathToDB
+
+        //        };
+        //        _user.UpadateUserImage(user);
+        //        //var deleteImg = (User.Identity as ClaimsIdentity).Claims.Where(c => c.Type == "Image").FirstOrDefault();
+        //        //if (deleteImg != null)
+        //        //{
+        //        //    string oldimg = Request.Path(deleteImg.Value.ToString());
+        //        //    if (System.IO.File.Exists(oldimg))
+        //        //    {
+        //        //        System.IO.File.Delete(oldimg);
+        //        //    }
+        //        //}
+        //        ViewBag.Message = "profile picture updated successfully.";
+
+        //    }
+        //    return RedirectToAction("Index", "Employee");
+        //}
+
+        //public IActionResult DeleteImage(int? id)
+        //{
+        //    return View();
+        //}
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult DeleteConfirmed(int id)
+        //{
+        //    var imageModel =  _user.GetUserByID(id).Image;
+
+        //    //delete image from wwwroot/image
+        //    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "Image", imageModel.);
+        //    if (System.IO.File.Exists(imagePath))
+        //        System.IO.File.Delete(imagePath);
+         
+        //    _user.DeleteUserImage(imageModel);
+        //    return RedirectToAction("Index","Employee");
+        //}
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
             return LocalRedirect("~/");
         }
 
-        //public IActionResult ProfileView()
-        //{
-        //    var email = HttpContext.Response.HttpContext.User.Identity.Name;
-        //    var user = _user.GetUserByEmail(email);
-        //    var pro = new ProfileView
-        //    {
-        //        Name = user.Name,
-        //        Email = user.Email,
-        //        Image = user.Image
-        //    };
+        public IActionResult ProfileView()
+        {
+            var email = HttpContext.Response.HttpContext.User.Identity.Name;
+            var user = _user.GetUserByEmail(email);
+            var pro = new ProfileView
+            {
+                Name = user.Name,
+                Email = user.Email,
+                Image = user.Image
+            };
 
-        //    return View(pro);
-        //}
+            return View(pro);
+        }
 
 
         // User Roles
@@ -480,27 +647,23 @@ namespace DapperStoredProc.Controllers
 
         //Delete user
         [HttpGet]
-        public IActionResult DeleteUser(int? id)
+        public IActionResult DeleteUser()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            _user.DeleteUser(id.GetValueOrDefault());
-            return RedirectToAction("Index");
+            return View();
+       
         }
 
         [HttpPost]
-        public IActionResult DeleteUser(int id, Users users)
+        public IActionResult DeleteUser(int id)
         {
             if (_user.DeleteUser(id) > 0)
             {
                 return RedirectToAction("Index");
             }
-            return View(users);
+            return View();
         }
-       
-        // Data Table ,Searching,sorting,Paging,Total Count,Filtering
+
+        //Data Table, Searching, sorting, Paging, Total Count,Filtering
         public JsonResult GetAllUser()
         {
             var request = new DataTableRequest();
@@ -515,9 +678,9 @@ namespace DapperStoredProc.Controllers
             new DataTableOrder()
             {
                 Dir = Request.Form["order[0][dir]"].FirstOrDefault(),
-                Column = Convert.ToInt32(Request.Form["order[0][column]"].FirstOrDefault())
+               Column = Convert.ToInt32(Request.Form["order[0][column]"].FirstOrDefault())
             }};
-            return Json(_user.GetAllUserAsync(request).Result);
+            return Json(_user.GetAllUserDT(request).Result);
         }
 
 

@@ -12,9 +12,10 @@ namespace DapperStoredProc.Services
         int UpdateUser(Users model);
         Users GetUserByID(int Id);
         Users GetUserByEmail(string model);
-        int DeleteUser(int Id);
+        int DeleteUser(int id);
         string CreatePasswordHash(string password);
-        int UpadateUserImage(Users model);
+        int UpadateUserImage(string image, int id);
+        int DeleteUserImage(Users model);
         bool VerifyPasswordHash(string dbpassword, string password);
         void UpdatePassword(string email, string password);
         void UpdateToken(string email, string token);
@@ -22,6 +23,8 @@ namespace DapperStoredProc.Services
         void UserIsVerified(string email, bool verify);
         IEnumerable<UserDetail> GetAllUsers(UserDetail model);
         Task<DataTableResponse<UserPartial>> GetAllUserAsync(DataTableRequest request);
-        
+        Task<DataTableResponse<UserPartial>> GetAllUserDT(DataTableRequest request);
+
+
     }
 }

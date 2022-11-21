@@ -83,45 +83,72 @@ namespace DapperStoredProc.Services
 
             return emp;
         }
-        public async Task<DataTableResponse<EmployeePartial>>GetAllEmployeeAsync(DataTableRequest request)
-        {
-            var req = new ListingRequest()
-            {
-                PageNo = request.Start,
-                PageSize = request.Length,
-                SortColumn = request.Order[0].Column,
-                SortDirection = request.Order[0].Dir,
-                SearchValue = request.Search != null ? request.Search.Value.Trim() : ""
-            };
-            var employee = await _genericRepo.GetEmployeeAsync(req);
-            return new DataTableResponse<EmployeePartial>()
-            {
-                Draw = request.Draw,
-                RecordsTotal = employee[0].TotalRows,
-                RecordsFiltered = employee[0].FilteredCount,
-                Data = employee.ToArray(),
-                Error = ""
-            };
-        }
+        //public async Task<DataTableResponse<EmployeePartial>> GetAllEmployeeAsync(DataTableRequest request)
+        //{
+        //    var req = new ListingRequest()
+        //    {
+        //        PageNo = request.Start,
+        //        PageSize = request.Length,
+        //        SortColumn = request.Order[0].Column,
+        //        SortDirection = request.Order[0].Dir,
+        //        SearchValue = request.Search != null ? request.Search.Value.Trim() : ""
+        //    };
+        //    var employee = await _genericRepo.GetEmployeeAsync(req);
+        //    return new DataTableResponse<EmployeePartial>()
+        //    {
+        //        draw = request.Draw,
+        //        recordsTotal = employee[0].TotalCount,
+        //        recordsFiltered = employee[0].FilteredCount,
+        //        data = employee.ToList(),
+        //        error = ""
+        //    };
+        //}
+
+        //public async Task<DataTableResponse<EmployeePartial>> GetAllEmployeeDT(DataTableRequest request)
+        //{
+        //    var req = new DTReq()
+        //    {
+
+        //        StartRowIndex = request.Start,
+        //        PageSize = request.Length,
+        //        SortExpression = request.Order[0].Dir,
+        //        SearchText = request.Search != null ? request.Search.Value.Trim() : ""
+        //    };
+        //    var employee = await _genericRepo.GetAllEmployee(req);
+        //    return new DataTableResponse<EmployeePartial>()
+        //    {
+        //        draw = request.Draw,
+        //        recordsTotal = employee[0].TotalCount,
+        //        recordsFiltered = employee[0].FilteredCount,
+        //        data = employee.ToList(),
+        //        error = ""
+        //    };
+        //}
+
         public async Task<DataTableResponse<EmployeePartial>> GetAllEmployeeDT(DataTableRequest request)
         {
-            var req = new ListingRequestDT()
+            var req = new DTReq()
             {
                 StartRowIndex = request.Start,
-                PageSize = request.Length,                
+                PageSize = request.Length,
                 SortExpression = request.Order[0].Dir,
                 SearchText = request.Search != null ? request.Search.Value.Trim() : ""
-            };
-            var employee = await _genericRepo.GetAllEmployee(req);
-            return new DataTableResponse<EmployeePartial>()
-            {
-                Draw = request.Draw,
-                RecordsTotal = employee[0].TotalRows,
-                RecordsFiltered = employee[0].FilteredCount,
-                Data = employee.ToArray(),
-                Error = ""
-            };
+          };
+            return await _genericRepo.GetAllEmployeeMultiple(req);
         }
+
+        //public object GetAllEmployeeDTMultiReq(DTReq request)
+        //{
+        //    Dapper.DynamicParameters param = new DynamicParameters();
+        //    param.Add("SearchText", request.SearchText, DbType.String);
+        //    param.Add("SortExpression", request.SortExpression, DbType.String);
+        //    param.Add("StartRowIndex", request.StartRowIndex, DbType.Int32);
+        //    param.Add("PageSize", request.PageSize, DbType.Int32);
+       
+
+        //   var dt = _dapperRepo.ReturnListMultiple("GetAllEmpDT", param);
+        //    return dt;
+        //}
 
     }
 }

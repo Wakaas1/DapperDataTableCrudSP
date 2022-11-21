@@ -28,7 +28,8 @@ namespace DapperStoredProc.DTO
         //[DataType(DataType.Password)]
         //[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-        
+        public string Image { get; set; }
+        public IFormFile UploadImage { get; set; }
 
 
     }

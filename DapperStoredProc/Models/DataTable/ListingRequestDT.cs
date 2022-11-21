@@ -9,8 +9,8 @@ namespace DapperStoredProc.Models.DataTable
     {
         public string SearchText { get; set; }
         public string SortExpression { get; set; } = "ASC";
-        public int StartRowIndex { get; set; } = 0;
-        public int PageSize { get; set; } = 10;
+        public int StartRowIndex { get; set; } 
+        public int PageSize { get; set; } 
         
     }
 }

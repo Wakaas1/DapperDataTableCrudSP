@@ -1,25 +1,25 @@
 ﻿@{
     Layout = null;
 }
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Index</title>
 
-    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
-    <link href="~/css/Sidebar.css" rel="stylesheet" />
-    <link href="~/css/validation.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+        <link href="~/css/Sidebar.css" rel="stylesheet" />
+        <link href="~/css/validation.css" rel="stylesheet" />
 
 
-</head>
+    </head>
 
 <div class="wrapper d-flex align-items-stretch">
     <nav id="sidebar">
         <div class="p-4 pt-5">
-            <a href="/User/ImageUpload" class="img logo rounded-circle mb-5" style=" background-image: url('images/user.png');
+            <a href="/User/CreateImage" class="img logo rounded-circle mb-5" style=" background-image: url('');
 "></a>
             <ul class="list-unstyled components mb-5">
                 <li class="active">
@@ -46,12 +46,12 @@
                     <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">User</a>
                     <ul class="collapse list-unstyled" id="pageSubmenu">
                         <li>
-                            <a href="/User/Index">User</a>
+                            <a href="/User/Index">UsersDetail</a>
                         </li>
                         <li>
                             <a href=""></a>
                         </li>
-                       
+
                     </ul>
                 </li>
                 <li>
@@ -86,10 +86,10 @@
                             <li><a href="welcome" class="menu-top-active">DASHBOARD</a></li>
 
                             @*@if (Session["Email"] != null)
-                            {
-                                <li><a href="welcome" class="menu-top-active">Welcome @Session["Email"].ToString()</a></li>
+                                {
+                                    <li><a href="welcome" class="menu-top-active">Welcome @Session["Email"].ToString()</a></li>
 
-                            }*@
+                                }*@
 
                         </ul>
                     </div>
@@ -140,6 +140,19 @@
                 </div>
             </div>
         </nav>
+
+        <select id="ddlDepartment">
+            <option value="0">Select</option>
+            <option value="Science">Science</option>
+            <option value="Admin">Admin</option>
+            <option value="English">English</option>
+            <option value="Law">Law</option>
+            <option value="Economics">Economics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Urdu">Urdu</option>
+            <option value="ComputerScience">ComputerScience</option>
+        </select>
+
         <div class="container">
             <div style="width:90%; margin:0 auto" class="tablecontainer">
                 <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/AddEmployee" data-type='Add' style="margin-top:10px;background-color:darkgreen;"> <i class="fa fa-plus"></i> Add Employee</a><br /><br />
@@ -158,6 +171,7 @@
         </div>
     </div>
 </div>
+
 <div class="footer">
     <p>
         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
@@ -190,7 +204,6 @@
 
 
 <!-- Scripts -->
-
 @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
@@ -209,86 +222,109 @@
 <script src="~/js/main.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 
+
+
 <script>
     $(document).ready(function () {
-        $('#myTable').DataTable(
-            {
+        $("#ddlDepartment").on('change', function (e) {
+            $('#myTable').DataTable({
                 "Processing": true, // for show progress bar
                 "serverSide": true, // for process server side
                 "filter": true, // this is for disable filter (search box)
                 "orderMulti": true, // for disable multiple column at once
-                "pageLength": 10,
-                "bSortable": true,
-                "paging": true,
+                //"pageLength": 10,
+                //"bSortable": true,
+                //"paging": true,
                 "ajax": {
                     "url": "/Employee/GetAllEmployeeDT",
                     "type": "POST",
-                    "datatype": "json"
-                },
-                "columnDefs": [{
-                    "order": [[0]],
-                    "targets": [0],
-                    "visible": false,
-                    "searchable": false,
-                    "language": {
-                        "emptyTable": "No record found. Please click on Add Employee for create new record.",
-                        "Processing": '<i class="fa fa- refresh fa- spin">Laoding...</i>'
-                    },
-                }],
-                columns: [
-                    { data: "empId", "autoWidth": true },
-                    { data: "employeeName", "autoWidth": true },
-                    { data: "designation", "autoWidth": true },
-                    { data: "department", "autoWidth": true },
-                    {
-                        data: "empId",
-                        "render": function (data, type, row) {
-                            return '<a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/UpdateEmployee?id=' + data + '" ><i class="fa fa-edit"></i></a>  <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/GetEmpByID?id=' + data + '" ><i class="fa fa-info"></i></a>  <a href="#" class="btn btn-danger" onclick=DelEmp("' + data + '")><i class="fa fa-trash"></i></a>'
-                        },
-                      }
-                ],
-                "dom": "Bflrtip",
-                    "buttons": [
-                        //{
-                        //    extend: 'copy',
-                        //    className: 'copy Button',
-                        //    text: '<style="background-color:lightgreen" ><i class="fa fa-clone"></i> Copy'
-                        //},
-                        {
-                            extend: 'excel',
-                            text: '<i class="fa fa-file-excel-o"></i> Excel'
-                        },
-                        {
-                            extend: 'pdf',
-                            text: '<i class="fa fa-file-pdf-o"></i> Pdf'
-                        },
-                        //{
-                        //    extend: 'csv',
-                        //    text: '<i class="fa fa-file-excel-o"></i> CSV'
-                        //},
-                        {
-                            extend: 'print',
-                            text: '<i class="fa fa-print"></i> Print',
-                            customize: function (win) {
-                                $(win.document.body)
-                                    .css('font-size', '10pt')
-                                    .prepend(
-                                        '<img src="http://datatables.net/media/images/logo-fade.png" style="position:absolute; top:0; left:0;" />'
-                                    );
+                    "datatype": "json",
+                    "data": { Department: $(this).find('option:selected').val() },
+                    success: function (response) {
+                        $('#myTable').hide();
+                        $('#myTable tbody').empty();
+                        $.each(response, function (i, item) {
+                            var rows = "<tr>" +
+                                "<td>" + "" + "</td>" +
+                                "<td>" + item.EmployeeName + "</td>" +
+                                "<td>" + item.Designation + "</td>" +
+                                "<td>" + item.Department + "</td>" +
+                                "</tr>";
 
-                                $(win.document.body).find('table')
-                                    .addClass('compact')
-                                    .css('font-size', 'inherit');
-                            }
-                        },
-                        //{
-                        //    text: 'Custom Button',
-                        //    action: function () {
-                        //        alert('hi');
-                        //    }
-                        //}
-                    ],
+                            "columnDefs";[{
+                                "order": [[0]],
+                                "targets": [0],
+                                "visible": true,
+                                "searchable": true,
+                                "language": {
+                                    "emptyTable": "No record found. Please click on Add User for create new record.",
+                                        "Processing": '<i class="fa fa- refresh fa- spin">Laoding...</i>'
+                                    
+                                },
+                            }],
+                                columns = [
+                                    //{ data: "empId", "autoWidth": true },
+                                    //{ data: "employeeName", "autoWidth": true },
+                                    //{ data: "designation", "autoWidth": true },
+                                    //{ data: "department", "autoWidth": true },
+                                    {
+                                        data: "empId",
+                                        "render": function (data, type, row) {
+                                            return '<a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/UpdateEmployee?id=' + data + '" ><i class="fa fa-edit"></i></a>  <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/GetEmpByID?id=' + data + '" ><i class="fa fa-info"></i></a>  <a href="#" class="btn btn-danger" onclick=DelEmp("' + data + '")><i class="fa fa-trash"></i></a>'
+                                        },
+                                    }
+                                ],
+                                $('#myTable tbody').append(rows);
+                        });
+                        $('#myTable').show();
+                    },
+                    error: function () { }
+                },
+                "dom": "Bflrtip",
+                "buttons": [
+                    //{
+                    //    extend: 'copy',
+                    //    className: 'copy Button',
+                    //    text: '<style="background-color:lightgreen" ><i class="fa fa-clone"></i> Copy'
+                    //},
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel-o"></i> Excel'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf-o"></i> Pdf'
+                    },
+                    //{
+                    //    extend: 'csv',
+                    //    text: '<i class="fa fa-file-excel-o"></i> CSV'
+                    //},
+                    {
+                        extend: 'print',
+                        text: '<i class="fa fa-print"></i> Print',
+                        customize: function (win) {
+                            $(win.document.body)
+                                .css('font-size', '10pt')
+                                .prepend(
+                                    '<img src="http://datatables.net/media/images/logo-fade.png" style="position:absolute; top:0; left:0;" />'
+                                );
+
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                    },
+                    //{
+                    //    text: 'Custom Button',
+                    //    action: function () {
+                    //        alert('hi');
+                    //    }
+                    //}
+                ],
+
+
             });
+        });
     });
 
 
@@ -463,7 +499,7 @@
             });
         }*@
 
-    
+
     //document.getElementById('DelEmp').onclick = function () {
     //    swal({
     //        title: "Are you sure?",

@@ -17,9 +17,11 @@ namespace DapperStoredProc.Models.DataTable
     }
     public partial class EmployeePartial
     {
-        public int TotalRows { get; set; }
+        public int TotalCount { get; set; }
         public int FilteredCount { get; set; }
 
 
     }
+
+
 }

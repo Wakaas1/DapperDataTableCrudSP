@@ -33,7 +33,11 @@ namespace DapperStoredProc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(10);//You can set Time   
+            });
+            services.AddMvc();
             services.AddControllersWithViews();
             //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConnGCU")));
             services.AddRazorPages();
@@ -73,7 +77,7 @@ namespace DapperStoredProc
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            
+            app.UseSession();
 
             app.UseRouting();
             app.UseAuthentication();

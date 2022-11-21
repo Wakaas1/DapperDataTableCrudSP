@@ -19,21 +19,21 @@ namespace DapperStoredProc.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeServices _services;
-       
+
 
         public EmployeeController(IEmployeeServices services)
         {
             _services = services;
-            
-            
+
+
         }
 
-        [Authorize/*(Roles = "Admin")*/]
+        [Authorize(Roles = "Admin,User,Ceo,Editor,Manager,AM,Director" )]
         public IActionResult Index()
         {
             return View(_services.GetAllEmployees());
         }
-      public IActionResult GetEmpByID(int? id)
+        public IActionResult GetEmpByID(int? id)
         {
 
             if (id == null)
@@ -54,12 +54,12 @@ namespace DapperStoredProc.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddEmployee([Bind("EmployeeName,Department,Designation")]Employee employee)
+        public IActionResult AddEmployee([Bind("EmployeeName,Department,Designation")] Employee employee)
         {
             long result = 0;
             int Status;
             string Value;
-           // ModelState.Remove("EmpId");
+            // ModelState.Remove("EmpId");
             if (ModelState.IsValid)
             {
                 result = _services.AddEmployee(employee);
@@ -84,15 +84,15 @@ namespace DapperStoredProc.Controllers
         [HttpGet]
         public IActionResult UpdateEmployee(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return NotFound();
             }
             var emp = _services.GetEmpByID(id.GetValueOrDefault());
             if (emp == null)
-        
+
                 return NotFound();
-            
+
             return View(emp);
         }
 
@@ -105,7 +105,7 @@ namespace DapperStoredProc.Controllers
             //ModelState.Remove("EmpId");
             if (ModelState.IsValid)
             {
-               result = _services.UpdateEmployee(employee);
+                result = _services.UpdateEmployee(employee);
                 if (result > 0)
                 {
                     Status = 200;
@@ -127,7 +127,7 @@ namespace DapperStoredProc.Controllers
         [HttpGet]
         public IActionResult DeleteEmployee(int? id)
         {
-           
+
             if (id == null)
             {
                 return NotFound();
@@ -138,7 +138,7 @@ namespace DapperStoredProc.Controllers
         [HttpPost]
         public IActionResult DeleteEmployee(int id, Employee employee)
         {
-            if (_services.DeleteEmployee(id)>0)
+            if (_services.DeleteEmployee(id) > 0)
             {
                 return RedirectToAction("Index");
             }
@@ -165,7 +165,7 @@ namespace DapperStoredProc.Controllers
 
         //    // Skip Number of Count
         //    int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
-            
+
         //    //getting all Employee data 
         //    var data = _context.Set<Employee>().AsQueryable();
 
@@ -194,6 +194,7 @@ namespace DapperStoredProc.Controllers
         //        data = empList
         //    });
         //}
+
         //[HttpPost]
         //public JsonResult GetAllEmployee()
         //{
@@ -205,6 +206,7 @@ namespace DapperStoredProc.Controllers
         //    {
         //        Value = Request.Form["search[value]"].FirstOrDefault()
         //    };
+
         //    request.Order = new DataTableOrder[] {
         //    new DataTableOrder()
         //    {
@@ -213,6 +215,7 @@ namespace DapperStoredProc.Controllers
         //    }};
         //    return Json(_services.GetAllEmployeeAsync(request).Result);
         //}
+
         [HttpPost]
         public JsonResult GetAllEmployeeDT()
         {
@@ -221,16 +224,31 @@ namespace DapperStoredProc.Controllers
             request.Start = Convert.ToInt32(Request.Form["start"].FirstOrDefault());
             request.Length = Convert.ToInt32(Request.Form["length"].FirstOrDefault());
             request.Search = new DataTableSearch()
-            {
-                Value = Request.Form["search[value]"].FirstOrDefault()
+            {                
+                Value = Request.Form["search[value]"].FirstOrDefault(), 
             };
             request.Order = new DataTableOrder[] {
             new DataTableOrder()
             {
-                Dir = Request.Form["order[0][dir]"].FirstOrDefault()
-                
+                Dir = Request.Form["order[0][dir]"].FirstOrDefault(),
+                Column = Convert.ToInt32(Request.Form["order[0][column]"].FirstOrDefault())
             }};
             return Json(_services.GetAllEmployeeDT(request).Result);
         }
+
+
+        //[HttpPost]
+        //public JsonResult GetAllEmployeeDT()
+        //{
+        //    var request = new DTReq();
+        //    request.SortExpression = Request.Form["order[0][dir]"].FirstOrDefault();
+        //    request.StartRowIndex = Convert.ToInt32(Request.Form["start"].FirstOrDefault());
+        //    request.PageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault());
+        //    request.SearchText = Request.Form["search[value]"].FirstOrDefault();
+
+        //    var Emp = _services.GetAllEmployeeDTMultiReq(request);
+
+        //    return Json(Emp);
+        //}
     }
 }

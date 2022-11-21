@@ -8,11 +8,11 @@ namespace DapperStoredProc.Models.DataTable
    
         public class DataTableResponse<T>
         {
-            public int Draw { get; set; }
-            public int RecordsTotal { get; set; }
-            public int RecordsFiltered { get; set; }
-            public T[] Data { get; set; }
-            public string Error { get; set; }
+            public int draw { get; set; }
+            public int recordsTotal { get; set; }
+            public int recordsFiltered { get; set; }
+            public List<T> data { get; set; }
+            public string error { get; set; }
         }
     
 }

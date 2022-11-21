@@ -1,17 +1,22 @@
 ﻿using Dapper;
+using DapperStoredProc.Models;
+using DapperStoredProc.Models.DataTable;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-
+using System.Linq;
 namespace DapperStoredProc.Data
 {
 
     public class DapperRepo : IDapperRepo
     {
         private string connectionString;
+
+        public List<EmployeePartial> EmployeePartial { get; private set; }
+        public IEnumerable<int> Total { get; private set; }
 
         public DapperRepo(IConfiguration configuration)
         {
@@ -58,7 +63,7 @@ namespace DapperStoredProc.Data
                 return param.Get<int>("EmpId");
             }
         }
-
+       
         public int CreateUserReturnInt(string StoredProcedure, DynamicParameters param = null)
         {
             using (SqlConnection sqlCon = new SqlConnection(connectionString))
@@ -88,17 +93,49 @@ namespace DapperStoredProc.Data
                 return param.Get<int>("RId");
             }
         }
-
-
-        public int Delete(string StoredProcedure, DynamicParameters param = null)
+        public async Task<DataTableResponse<T>> ReturnListMultiple<T>(string procrdureName, DynamicParameters param = null)
         {
+            var list = new List<T>(); int total = 0; 
             using (SqlConnection sqlCon = new SqlConnection(connectionString))
             {
                 sqlCon.Open();
-                return sqlCon.Execute(StoredProcedure, param, commandType: CommandType.StoredProcedure);
-               
+                using (var query = await sqlCon.QueryMultipleAsync(procrdureName, param, commandType: CommandType.StoredProcedure))
+                {
+                   
+                    list = query.Read<T>().AsList<T>();                    
+                    if (!query.IsConsumed)
+                        total = query.Read<int>().FirstOrDefault();
+                    
+                }
             }
+            return new DataTableResponse<T>()
+            {
+                
+                data = list,
+                recordsFiltered = total,
+                recordsTotal = total
+            };
         }
+
+        //public object ReturnListMultiple(string procrdureName, DynamicParameters param = null)
+        //{
+
+        //    using (SqlConnection sqlCon = new SqlConnection(connectionString))
+        //    {
+        //        sqlCon.Open();
+        //        using (var query = sqlCon.QueryMultiple(procrdureName, param, commandType: CommandType.StoredProcedure))
+        //        {
+        //            var dt = new DataResponse();
+        //            dt.Record = query.Read<Employee>().AsList<Employee>();
+        //            if (!query.IsConsumed)
+        //                dt.TotalRec = query.Read<int>();
+        //            return dt;
+        //        }
+        //    }
+
+        //}
+
+
     }
 }
 
