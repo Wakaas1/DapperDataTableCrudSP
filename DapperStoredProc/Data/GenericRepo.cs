@@ -79,10 +79,13 @@ namespace DapperStoredProc.Data
             try
             {
                 Dapper.DynamicParameters param = new DynamicParameters();
+                //param.Add("Department", request.Department, DbType.String);
                 param.Add("SearchText", request.SearchText, DbType.String);
                 param.Add("SortExpression", request.SortExpression, DbType.String);
                 param.Add("StartRowIndex", request.StartRowIndex, DbType.Int32);
                 param.Add("PageSize", request.PageSize, DbType.Int32);
+                param.Add("SubjectId", request.SubjectId, DbType.Int32);
+               
 
                 return await _dapperRepo.ReturnListMultiple<EmployeePartial>("GetAllEmpDT", param);
                

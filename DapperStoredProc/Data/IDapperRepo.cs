@@ -18,5 +18,6 @@ namespace DapperStoredProc.Data
         int CreateUserReturnRoleInt(string StoredProcedure, DynamicParameters param = null);
         Task<DataTableResponse<T>> ReturnListMultiple<T>(string procrdureName, DynamicParameters param = null);
         //Task<DataResponse> ReturnMultiple(string procrdureName, DynamicParameters param = null);
+        int CreateUserReturnSubjectInt(string StoredProcedure, DynamicParameters param = null);
     }
 }

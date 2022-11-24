@@ -13,6 +13,7 @@ namespace DapperStoredProc.Models.DataTable
         public string Designation { get; set; }
         
         public string Department { get; set; }
+        public string SubjectName { get; set; }
 
     }
     public partial class EmployeePartial

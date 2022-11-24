@@ -23,6 +23,14 @@
         <br/>
         <br/>
         @Html.DropDownListFor(x => x.Department, new SelectList(Enum.GetValues(typeof(Department))), "Select Department")
+        <br/>
+        <br/>
+
+        <div class="form-control">
+            <select asp-for="SubjectId" asp-items="@ViewBag.subId" class="form-select"  >
+                <option value="0">Choose A Subject</option>
+            </select>
+        </div>
         
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

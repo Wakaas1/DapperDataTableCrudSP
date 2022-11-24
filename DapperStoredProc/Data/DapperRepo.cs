@@ -93,6 +93,16 @@ namespace DapperStoredProc.Data
                 return param.Get<int>("RId");
             }
         }
+
+        public int CreateUserReturnSubjectInt(string StoredProcedure, DynamicParameters param = null)
+        {
+            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            {
+                sqlCon.Open();
+                sqlCon.Execute(StoredProcedure, param, commandType: CommandType.StoredProcedure);
+                return param.Get<int>("subId");
+            }
+        }
         public async Task<DataTableResponse<T>> ReturnListMultiple<T>(string procrdureName, DynamicParameters param = null)
         {
             var list = new List<T>(); int total = 0; 

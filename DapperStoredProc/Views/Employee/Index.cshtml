@@ -1,6 +1,8 @@
 ﻿@{
     Layout = null;
+
 }
+
     <head>
         <meta name="viewport" content="width=device-width" />
         <title>Index</title>
@@ -14,6 +16,8 @@
         <link href="~/css/validation.css" rel="stylesheet" />
 
 
+        @*<link href="~/DataTables-1.13.1/css/dataTables.bootstrap5.css" rel="stylesheet" />
+        <link href="~/DataTables-1.13.1/css/jquery.dataTables.css" rel="stylesheet" />*@
     </head>
 
 <div class="wrapper d-flex align-items-stretch">
@@ -141,21 +145,20 @@
             </div>
         </nav>
 
-        <select id="ddlDepartment">
-            <option value="0">Select</option>
-            <option value="Science">Science</option>
-            <option value="Admin">Admin</option>
-            <option value="English">English</option>
-            <option value="Law">Law</option>
-            <option value="Economics">Economics</option>
-            <option value="Chemistry">Chemistry</option>
-            <option value="Urdu">Urdu</option>
-            <option value="ComputerScience">ComputerScience</option>
-        </select>
+
 
         <div class="container">
             <div style="width:90%; margin:0 auto" class="tablecontainer">
-                <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/AddEmployee" data-type='Add' style="margin-top:10px;background-color:darkgreen;"> <i class="fa fa-plus"></i> Add Employee</a><br /><br />
+
+                <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/AddEmployee" data-type='Add' style="margin-top:10px;background-color:darkgreen;"> <i class="fa fa-plus"></i> Add Employee</a>
+
+                <select id="sub" name="Sub" asp-items="@ViewBag.subId" style="margin-top:10px;background-color:darkorange;" data-val="true">
+                    <option value="0">Choose A Subject</option>
+
+                </select>
+
+                <br />
+                <br />
                 <table id="myTable" class="table table-bordered" style="text-align:center">
                     <thead>
                         <tr>
@@ -163,6 +166,7 @@
                             <th>Employee Name</th>
                             <th>Department</th>
                             <th>Designation</th>
+                            <th>SubjectName</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -171,7 +175,6 @@
         </div>
     </div>
 </div>
-
 <div class="footer">
     <p>
         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
@@ -204,357 +207,18 @@
 
 
 <!-- Scripts -->
-@*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 <script src="@Url.Content("~/lib/jquery-validation/dist/jquery.validate.js")"></script>
 <script src="@Url.Content("~/lib/jquery-validation/dist/additional-methods.js")"></script>
-<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="//cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
-<script src="//cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-<script src="~/js/main.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/datatables-1.13.1/js/jquery.datatables.min.js"></script>
+<script src="~/datatables-1.13.1/js/datatables.datatables.min.js"></script>
+<script src="~/datatables-1.13.1/js/datatables.bootstrap.min.js"></script>
+<script src="~/datatables-1.13.1/js/datatables.jqueryui.min.js"></script>
+<script src="~/datatables-1.13.1/js/datatables.bootstrap5.min.js"></script>
+<script src="~/js/BootStrapNotify.js"></script>
+<script src="~/js/EmployeeDT.js"></script>
 
 
-
-<script>
-    $(document).ready(function () {
-        $("#ddlDepartment").on('change', function (e) {
-            $('#myTable').DataTable({
-                "Processing": true, // for show progress bar
-                "serverSide": true, // for process server side
-                "filter": true, // this is for disable filter (search box)
-                "orderMulti": true, // for disable multiple column at once
-                //"pageLength": 10,
-                //"bSortable": true,
-                //"paging": true,
-                "ajax": {
-                    "url": "/Employee/GetAllEmployeeDT",
-                    "type": "POST",
-                    "datatype": "json",
-                    "data": { Department: $(this).find('option:selected').val() },
-                    success: function (response) {
-                        $('#myTable').hide();
-                        $('#myTable tbody').empty();
-                        $.each(response, function (i, item) {
-                            var rows = "<tr>" +
-                                "<td>" + "" + "</td>" +
-                                "<td>" + item.EmployeeName + "</td>" +
-                                "<td>" + item.Designation + "</td>" +
-                                "<td>" + item.Department + "</td>" +
-                                "</tr>";
-
-                            "columnDefs";[{
-                                "order": [[0]],
-                                "targets": [0],
-                                "visible": true,
-                                "searchable": true,
-                                "language": {
-                                    "emptyTable": "No record found. Please click on Add User for create new record.",
-                                        "Processing": '<i class="fa fa- refresh fa- spin">Laoding...</i>'
-                                    
-                                },
-                            }],
-                                columns = [
-                                    //{ data: "empId", "autoWidth": true },
-                                    //{ data: "employeeName", "autoWidth": true },
-                                    //{ data: "designation", "autoWidth": true },
-                                    //{ data: "department", "autoWidth": true },
-                                    {
-                                        data: "empId",
-                                        "render": function (data, type, row) {
-                                            return '<a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/UpdateEmployee?id=' + data + '" ><i class="fa fa-edit"></i></a>  <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/GetEmpByID?id=' + data + '" ><i class="fa fa-info"></i></a>  <a href="#" class="btn btn-danger" onclick=DelEmp("' + data + '")><i class="fa fa-trash"></i></a>'
-                                        },
-                                    }
-                                ],
-                                $('#myTable tbody').append(rows);
-                        });
-                        $('#myTable').show();
-                    },
-                    error: function () { }
-                },
-                "dom": "Bflrtip",
-                "buttons": [
-                    //{
-                    //    extend: 'copy',
-                    //    className: 'copy Button',
-                    //    text: '<style="background-color:lightgreen" ><i class="fa fa-clone"></i> Copy'
-                    //},
-                    {
-                        extend: 'excel',
-                        text: '<i class="fa fa-file-excel-o"></i> Excel'
-                    },
-                    {
-                        extend: 'pdf',
-                        text: '<i class="fa fa-file-pdf-o"></i> Pdf'
-                    },
-                    //{
-                    //    extend: 'csv',
-                    //    text: '<i class="fa fa-file-excel-o"></i> CSV'
-                    //},
-                    {
-                        extend: 'print',
-                        text: '<i class="fa fa-print"></i> Print',
-                        customize: function (win) {
-                            $(win.document.body)
-                                .css('font-size', '10pt')
-                                .prepend(
-                                    '<img src="http://datatables.net/media/images/logo-fade.png" style="position:absolute; top:0; left:0;" />'
-                                );
-
-                            $(win.document.body).find('table')
-                                .addClass('compact')
-                                .css('font-size', 'inherit');
-                        }
-                    },
-                    //{
-                    //    text: 'Custom Button',
-                    //    action: function () {
-                    //        alert('hi');
-                    //    }
-                    //}
-                ],
-
-
-            });
-        });
-    });
-
-
-    $('#exampleModal').on('shown.bs.modal', function (event) {
-    $('#empPopup').html();
-        var url = '';
-        url = event.relatedTarget.getAttribute('data-url');
-        $.get(url)
-            .done(function (response) {
-                $('#empPopup').html(response);
-            });
-    });
-
-
-
-
-        if ($.validator) {
-            $.validator.setDefaults({
-                ignore: [] // DON'T IGNORE PLUGIN HIDDEN SELECTS, CHECKBOXES AND RADIOS!!!
-                ,
-                highlight: function (element, errorClass) {
-                    $(element).removeClass(errorClass);
-                    $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
-                },
-                unhighlight: function (element, errorClass) {
-                    $(element).closest('.form-group').addClass('has-success').removeClass('has-error');
-                },
-                errorPlacement: function (error, element) {
-                    if (element.data().chosen) {
-                        {
-                            element.next().after(error);
-                        }
-                    } else {
-                        if (element.parent().hasClass("input-group")) {
-                            element.parent().next().after(error);
-                        } else {
-                            element.after(error);
-                        }
-                    }
-                }
-            });
-
-        }
-        function validateEmpForm() {
-            $('#myform').validate({
-                rules: {
-                    EmployeeName: { required: true },
-                    Designation: { required: true },
-                    Department: { required: true }
-                },
-                messages: {
-                    EmployeeName: { required: 'Please provide Employee Name' },
-                    Designation: { required: 'Please provide Employee Designation' },
-                    Department: { required: 'Please provide Employee Department' },
-
-                },
-                submitHandler: function (form) {
-                    var form = $('#myform')[0];
-                    var formData = new FormData(form);
-                    $.ajax({
-                        url: form.action,
-                        data: formData,
-                        type: 'POST',
-                        contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
-                        processData: false, // NEEDED, DON'T OMIT THIS
-                        success: function (response) {
-                            if (response.status == 200) {
-                                $("#exampleModal").modal("hide");
-                                $.notify({
-                                    // options
-                                    title: '<strong>Success</strong>',
-                                    message: "<br>Record has been saved successfully",
-                                    icon: 'glyphicon glyphicon-ok'
-                                },
-                                    {
-                                    // settings
-                                    element: 'body',
-                                    //position: null,
-                                    type: "success",
-                                    //allow_dismiss: true,
-                                    //newest_on_top: false,
-                                    showProgressbar: false,
-                                    placement: {
-                                        from: "top",
-                                        align: "center"
-                                    },
-                                    offset: 20,
-                                    spacing: 10,
-                                       z_index: 1051,
-                                    delay: 3300,
-                                    timer: 1000,
-
-                                });
-                                $('#myTable').DataTable().ajax.reload();
-                               //notify("saved", "App Design Pattern Mapping Updated Successfully !");
-                            }
-                            else {
-                                $.notify({
-                                    // options
-                                    title: '<strong>Error</strong>',
-                                    message: "<br>There was error an occured.",
-                                    icon: 'glyphicon glyphicon-remove-sign',
-
-                                }, {
-                                    // settings
-                                    element: 'body',
-                                    //position: null,
-                                        type: "danger",
-                                    //allow_dismiss: true,
-                                    //newest_on_top: false,
-                                    showProgressbar: false,
-                                    placement: {
-                                        from: "top",
-                                        align: "center"
-                                    },
-                                    offset: 20,
-                                    spacing: 10,
-                                        z_index: 1051,
-                                    delay: 3300,
-                                    timer: 1000,
-
-                                });
-                            }
-                        }, error: function () {
-                        }
-                    });
-                    return false;
-                }
-            });
-        }
-
-
-    @*function Delete(id) {
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-            });
-            swalWithBootstrapButtons.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, cancel!',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    {
-                        $.ajax({
-                            type: "POST",
-                            url: '@Url.Action("DeleteEmployee", "Employee")/' + id,
-                            success: function (data) {
-                                dataTable.ajax.reload();
-                            }
-                        });
-                    }
-                    swalWithBootstrapButtons.fire(
-                        'Deleted!',
-                        'Your file has been deleted.',
-                        'success'
-                    );
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    swalWithBootstrapButtons.fire(
-                        'Cancelled',
-                        'Your imaginary file is safe :)',
-                        'error'
-                    )
-                }
-            });
-        }*@
-
-
-    //document.getElementById('DelEmp').onclick = function () {
-    //    swal({
-    //        title: "Are you sure?",
-    //        text: "You will not be able to get back this record!",
-    //        type: "warning",
-    //        showCancelButton: true,
-    //        confirmButtonColor: '#DD6B55',
-    //        confirmButtonText: 'Yes, delete it!',
-    //        closeOnConfirm: false,
-    //        //closeOnCancel: false
-    //    },
-    //        function () {
-    //            swal("Deleted!", "Your imaginary file has been deleted!", "success");
-    //        });
-    //};
-    //document.getElementById('DelEmp').onclick = function () {
-    //    swal({
-    //        title: "Are you sure?",
-    //        text: "You will not be able to recover this imaginary file!",
-    //        type: "warning",
-    //        showCancelButton: true,
-    //        confirmButtonColor: '#DD6B55',
-    //        confirmButtonText: 'Yes, delete it!',
-    //        cancelButtonText: "No, cancel please!",
-    //        closeOnConfirm: false,
-    //        closeOnCancel: false
-    //    },
-    //        function (isConfirm) {
-    //            if (isConfirm) {
-    //                swal("Deleted!", "Your imaginary file has been deleted!", "success");
-    //            } else {
-    //                swal("Cancelled", "Your imaginary file is safe :)", "error");
-    //            }
-    //        });
-    //};
-
-    function DelEmp(id) {
-    if (confirm("Are you sure you want to delete ...?")) {
-        Delete(id);
-    } else {
-        return false;
-    }
-}
-        function Delete(id) {
-            var url = '@Url.Content("~/")' + "Employee/DeleteEmployee";
-
-            $.post(url, { ID: id }, function (data) {
-                if (data) {
-                    oTable = $('#myTable').DataTable();
-                    oTable.draw();
-                } else {
-                    alert("Something Went Wrong!");
-            }
-        });
-    }
-
-</script>
 

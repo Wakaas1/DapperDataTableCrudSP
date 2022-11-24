@@ -16,6 +16,8 @@ namespace DapperStoredProc.Models
         public string Designation { get; set; }
         [Required(ErrorMessage = "Name of Department is Required.")]
         public string Department { get; set; }
+        public int SubjectId { get; set; }
+        public virtual Subjects subject { get; set; }
        
         //public string Response { get; set; }
     }

@@ -11,6 +11,7 @@ using DapperStoredProc.Models.DataTable;
 using DapperStoredProc.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
@@ -31,7 +32,8 @@ namespace DapperStoredProc.Controllers
         [Authorize(Roles = "Admin,User,Ceo,Editor,Manager,AM,Director" )]
         public IActionResult Index()
         {
-            return View(_services.GetAllEmployees());
+            ViewBag.subId = new SelectList(_services.GetAllSubjects().ToList(), "subId", "SubjectName");
+            return View();
         }
         public IActionResult GetEmpByID(int? id)
         {
@@ -50,18 +52,20 @@ namespace DapperStoredProc.Controllers
 
         public IActionResult AddEmployee()
         {
+            ViewBag.subId = new SelectList(_services.GetAllSubjects().ToList(), "subId", "SubjectName");
             return View();
         }
 
         [HttpPost]
-        public IActionResult AddEmployee([Bind("EmployeeName,Department,Designation")] Employee employee)
+        public IActionResult AddEmployee(Employee employee)
         {
+            ViewBag.subId = new SelectList(_services.GetAllSubjects(), "subId", "SubjectName");
             long result = 0;
             int Status;
             string Value;
             // ModelState.Remove("EmpId");
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 result = _services.AddEmployee(employee);
                 if (result > 0)
                 {
@@ -73,12 +77,12 @@ namespace DapperStoredProc.Controllers
                     Status = 500;
                     Value = "There is some error at server side";
                 }
-            }
-            else
-            {
-                Status = 500;
-                Value = "There is some error at client side";
-            }
+            //}
+            //else
+            //{
+            //    Status = 500;
+            //    Value = "There is some error at client side";
+            //}
             return Json(new { status = Status, value = Value });
         }
         [HttpGet]
@@ -220,20 +224,26 @@ namespace DapperStoredProc.Controllers
         public JsonResult GetAllEmployeeDT()
         {
             var request = new DataTableRequest();
-            request.Draw = Convert.ToInt32(Request.Form["draw"].FirstOrDefault());
-            request.Start = Convert.ToInt32(Request.Form["start"].FirstOrDefault());
-            request.Length = Convert.ToInt32(Request.Form["length"].FirstOrDefault());
+            request.Draw = Convert.ToInt32(Request.Form["draw"]);
+            request.Start = Convert.ToInt32(Request.Form["start"]);
+            request.Length = Convert.ToInt32(Request.Form["length"]);
             request.Search = new DataTableSearch()
             {                
-                Value = Request.Form["search[value]"].FirstOrDefault(), 
+                Value = Request.Form["search[value]"], 
             };
+            var subid = Convert.ToInt32(Request.Form["string1"]);
+            
+
+            var result = new List<Department>();
+            
             request.Order = new DataTableOrder[] {
             new DataTableOrder()
             {
-                Dir = Request.Form["order[0][dir]"].FirstOrDefault(),
-                Column = Convert.ToInt32(Request.Form["order[0][column]"].FirstOrDefault())
+                Dir = Request.Form["order[0][dir]"],
+                Column = Convert.ToInt32(Request.Form["order[0][column]"])
             }};
-            return Json(_services.GetAllEmployeeDT(request).Result);
+            var dt = Json(_services.GetAllEmployeeDT(request, subid).Result);
+            return dt; 
         }
 
 

@@ -33,8 +33,13 @@ namespace DapperStoredProc.Services
             empList = _dapperRepo.ReturnList<Employee>("GetAllEmp").ToList();
             return (empList);
         }
-        
 
+        public List<Subjects> GetAllSubjects()
+        {
+            List<Subjects> sbList = new List<Subjects>();
+            sbList = _dapperRepo.ReturnList<Subjects>("GetAllSubject").ToList();
+            return (sbList);
+        }
         public Employee GetEmpByID(int EmpId)
         {
             
@@ -52,6 +57,7 @@ namespace DapperStoredProc.Services
                 param.Add("@EmployeeName", model.EmployeeName);
                 param.Add("@Department", model.Department);
                 param.Add("@Designation", model.Designation);
+                param.Add("@SubId", model.SubjectId);
                 var result = _dapperRepo.CreateEmployeeReturnInt("dbo.AddEmployee", param);
                 if (result > 0)
                 {
@@ -69,6 +75,7 @@ namespace DapperStoredProc.Services
             param.Add("@EmployeeName", model.EmployeeName);
             param.Add("@Department", model.Department);
             param.Add("@Designation", model.Designation);
+            param.Add("@SubId", model.SubjectId);
             var result = _dapperRepo.CreateEmployeeReturnInt("dbo.UpdateEmployee", param);
             
 
@@ -125,10 +132,11 @@ namespace DapperStoredProc.Services
         //    };
         //}
 
-        public async Task<DataTableResponse<EmployeePartial>> GetAllEmployeeDT(DataTableRequest request)
+        public async Task<DataTableResponse<EmployeePartial>> GetAllEmployeeDT(DataTableRequest request,int sub)
         {
             var req = new DTReq()
             {
+                SubjectId = sub,
                 StartRowIndex = request.Start,
                 PageSize = request.Length,
                 SortExpression = request.Order[0].Dir,
