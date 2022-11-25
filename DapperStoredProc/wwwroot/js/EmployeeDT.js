@@ -2,21 +2,22 @@
     $('#sub').on('change', function (e) {
         $('#myTable').DataTable({
 
-            "Processing": true, // for show progress bar
-            "serverSide": true, // for process server side
-            "filter": true, // this is for disable filter (search box)
-            "orderMulti": true, // for disable multiple column at once
-            //"pageLength": 10,
-            //"bSortable": true,
-            //"paging": true,
-            "ajax": {
-                "url": "/Employee/GetAllEmployeeDT",
-                "type": "POST",
-                "datatype": "json",
-                "data": function (d) {
-                    d.string1 = $("#sub").val() === '' ? '' : $("#sub").val()
-                }
-            },
+        "Processing": true, // for show progress bar
+        "serverSide": true, // for process server side
+        "filter": true, // this is for disable filter (search box)
+        "orderMulti": true, // for disable multiple column at once
+        "bDestroy": true,
+        //"pageLength": 10,
+        //"bSortable": true,
+        //"paging": true,
+        "ajax": {
+            "url": "/Employee/GetAllEmployeeDT",
+            "type": "POST",
+            "datatype": "json",
+            "data": function (d) { 
+                 d.string1 = $("#sub").val() === '' ? '' : $("#sub").val()
+            }           
+        },
             "columnDefs": [{
                 "order": [[0]],
                 "targets": [0],
@@ -27,19 +28,19 @@
                     "Processing": '<i class="fa fa- refresh fa- spin">Laoding...</i>'
                 },
             }],
-
-            columns: [
-                { data: "empId", "autoWidth": true },
-                { data: "employeeName", "autoWidth": true },
-                { data: "designation", "autoWidth": true },
-                { data: "department", "autoWidth": true },
-                { data: "subjectName", "autoWidth": true },
+            columns: [                
+                { data: "employeeName" },
+                { data: "designation" },
+                { data: "department" },
+                { data: "subjectName" },
                 {
                     data: "empId",
                     "render": function (data, type, row) {
                         return '<a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/UpdateEmployee?id=' + data + '" ><i class="fa fa-edit"></i></a>  <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Employee/GetEmpByID?id=' + data + '" ><i class="fa fa-info"></i></a>  <a href="#" class="btn btn-danger" onclick=DelEmp("' + data + '")><i class="fa fa-trash"></i></a>'
-                    }
+                    },
+                    "Width": "150px"
                 }
+                
             ],
             "dom": "Bflrtip",
             "buttons": [
@@ -82,11 +83,9 @@
                 //    }
                 //}
             ]
-
-
         });
     });
-});
+}); 
 
 
 $('#exampleModal').on('shown.bs.modal', function (event) {

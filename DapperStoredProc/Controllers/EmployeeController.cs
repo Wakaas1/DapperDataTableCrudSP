@@ -32,8 +32,10 @@ namespace DapperStoredProc.Controllers
         [Authorize(Roles = "Admin,User,Ceo,Editor,Manager,AM,Director" )]
         public IActionResult Index()
         {
+            
+            var emp =_services.GetAllEmployees().ToList();
             ViewBag.subId = new SelectList(_services.GetAllSubjects().ToList(), "subId", "SubjectName");
-            return View();
+            return View(emp);
         }
         public IActionResult GetEmpByID(int? id)
         {
@@ -242,8 +244,9 @@ namespace DapperStoredProc.Controllers
                 Dir = Request.Form["order[0][dir]"],
                 Column = Convert.ToInt32(Request.Form["order[0][column]"])
             }};
-            var dt = Json(_services.GetAllEmployeeDT(request, subid).Result);
-            return dt; 
+            var res = _services.GetAllEmployeeDT(request,subid).Result;
+            res.draw = request.Draw;
+            return Json(res);
         }
 
 

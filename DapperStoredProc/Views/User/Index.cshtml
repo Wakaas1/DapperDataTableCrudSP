@@ -140,7 +140,7 @@
         <div class="container">
             <div style="width:90%; margin:0 auto" class="tablecontainer">
                 <a class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" href="" data-url="/Role/CreateRole" data-type='Add' style="margin-top:10px;background-color:darkgreen;"> <i class="fa fa-plus"></i> Add New Role</a><br /><br />
-                <table id="myTable" class="table table-bordered" style="text-align:center">
+                <table id="myTableUser" class="table table-bordered" style="text-align:center">
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -206,7 +206,7 @@
 
 <script>
     $(document).ready(function () {
-        $('#myTable').DataTable(
+        $('#myTableUser').DataTable(
             {
                 "Processing": true, // for show progress bar
                 "serverSide": true, // for process server side
@@ -335,7 +335,7 @@
                                         timer: 1000,
 
                                     });
-                                $('#myTable').DataTable().ajax.reload();
+                                $('#myTableUser').DataTable().ajax.reload();
                                 //notify("saved", "App Design Pattern Mapping Updated Successfully !");
                             }
                             else {
@@ -385,7 +385,7 @@
 
             $.post(url, { ID: id }, function (data) {
                 if (data) {
-                    oTable = $('#myTable').DataTable();
+                    oTable = $('#myTableUser').DataTable();
                     oTable.draw();
                 } else {
                     alert("Something Went Wrong!");
